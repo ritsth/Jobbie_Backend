@@ -1,61 +1,126 @@
-using Microsoft.AspNetCore.Mvc;
-using AdminService.Repositories;
 using AdminService.Entities;
+using AdminService.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AdminService.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("jobs")]
     public class AdminJobController : ControllerBase
     {
-        private readonly IAdminJobRepository _repository;
+        private readonly IAdminJobRepository _adminJobRepository;
 
-        public AdminJobController(IAdminJobRepository repository)
+        public AdminJobController(IAdminJobRepository adminJobRepository)
         {
-            _repository = repository;
+            _adminJobRepository = adminJobRepository;
         }
 
+        // GET: api/AdminJob
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public IActionResult GetAllJobs()
         {
-            var jobs = await _repository.GetAllJobsAsync();
-            return Ok(jobs);
+            try
+            {
+                var jobs = _adminJobRepository.GetAll();
+                return Ok(jobs);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
+        // GET: api/AdminJob/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public IActionResult GetJobById(int id)
         {
-            var job = await _repository.GetJobByIdAsync(id);
-            if (job == null)
+            try
             {
-                return NotFound();
+                var job = _adminJobRepository.GetById(id);
+                if (job == null)
+                {
+                    return NotFound();
+                }
+                return Ok(job);
             }
-            return Ok(job);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
+        // POST: api/AdminJob
         [HttpPost]
-        public async Task<IActionResult> Create(AdminJobEntity job)
+        public IActionResult CreateJob([FromBody] AdminJobEntity job)
         {
-            await _repository.AddJobAsync(job);
-            return CreatedAtAction(nameof(GetById), new { id = job.Id }, job);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, AdminJobEntity job)
-        {
-            if (id != job.Id)
+            try
             {
-                return BadRequest();
+                if (job == null)
+                {
+                    return BadRequest("Job data is null.");
+                }
+
+                var createdJob = _adminJobRepository.InsertJob(job);
+                return CreatedAtAction(nameof(GetJobById), new { id = createdJob.Id }, createdJob);
             }
-            await _repository.UpdateJobAsync(job);
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        // PUT: api/AdminJob/{id}
+        [HttpPut("{id}")]
+        public IActionResult UpdateJob(int id, [FromBody] AdminJobEntity job)
         {
-            await _repository.DeleteJobAsync(id);
-            return NoContent();
+            try
+            {
+                if (job == null || job.Id != id)
+                {
+                    return BadRequest("Job data is invalid.");
+                }
+
+                var updatedJob = _adminJobRepository.UpdateJob(job);
+                return Ok(updatedJob);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        // DELETE: api/AdminJob/{id}
+        [HttpDelete("{id}")]
+        public IActionResult DeleteJob(int id)
+        {
+            try
+            {
+                _adminJobRepository.DeleteJob(id);
+                return NoContent(); // 204 No Content indicates the delete was successful
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        // GET: api/AdminJob/status/{status}
+        [HttpGet("status/{status}")]
+        public IActionResult GetJobsByStatus(string status)
+        {
+            try
+            {
+                var jobs = _adminJobRepository.GetByStatus(status);
+                if (jobs == null || !jobs.Any())
+                {
+                    return NotFound();
+                }
+                return Ok(jobs);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }

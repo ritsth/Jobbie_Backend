@@ -2,51 +2,71 @@ using Dapper;
 using System.Data;
 using AdminService.Entities;
 using Microsoft.Extensions.Configuration;
+using AdminService.Config;
 
 namespace AdminService.Repositories
 {
     public class AdminJobRepository : IAdminJobRepository
     {
-        private readonly IDbConnection _dbConnection;
+        private readonly string _connectionString;
 
-        public AdminJobRepository(IConfiguration configuration)
+        public AdminJobRepository(string connectionString)
         {
-            string connectionString = configuration.GetConnectionString("DefaultConnection");
-            _dbConnection = new MySql.Data.MySqlClient.MySqlConnection(connectionString);
+            _connectionString = connectionString;
         }
 
-        public async Task<IEnumerable<AdminJobEntity>> GetAllJobsAsync()
+        public AdminJobEntity InsertJob(AdminJobEntity job)
         {
-            // Console.log("GetAllJobsAsync");
-            var sql = "SELECT * FROM AdminJobEntities WHERE Status != 'Deleted'";
-            return await _dbConnection.QueryAsync<AdminJobEntity>(sql);
+            using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
+            string sql = @"INSERT INTO Jobs (Title, Description, Status, OwnerId, CreatedDateTime)
+                           VALUES (@Title, @Description, @Status, @OwnerId, @CreatedDateTime);
+                           SELECT LAST_INSERT_ID();";
+
+            // job.CreatedDateTime = job.CreatedDateTime == default ? DateTime.UtcNow : job.CreatedDateTime;
+            var id = connection.ExecuteScalar<int>(sql, job);
+            job.Id = id;
+            job.OwnerId = "Admin";
+            return job;
         }
 
-        public async Task<AdminJobEntity> GetJobByIdAsync(int id)
+        public AdminJobEntity GetById(int id)
         {
-            var sql = "SELECT * FROM AdminJobEntities WHERE Id = @Id AND Status != 'Deleted'";
-            return await _dbConnection.QueryFirstOrDefaultAsync<AdminJobEntity>(sql, new { Id = id });
+            using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
+            string sql = "SELECT * FROM Jobs WHERE Id = @Id";
+            return connection.QueryFirstOrDefault<AdminJobEntity>(sql, new { Id = id });
         }
 
-        public async Task AddJobAsync(AdminJobEntity job)
+        public IEnumerable<AdminJobEntity> GetAll()
         {
-            var sql = @"INSERT INTO AdminJobEntities (Title, Description, Status, OwnerId, CreatedDateTime) 
-                        VALUES (@Title, @Description, @Status, @OwnerId, @CreatedDateTime)";
-            await _dbConnection.ExecuteAsync(sql, job);
+            using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
+            string sql = "SELECT * FROM Jobs";
+            return connection.Query<AdminJobEntity>(sql);
         }
 
-        public async Task UpdateJobAsync(AdminJobEntity job)
+        public IEnumerable<AdminJobEntity> GetByStatus(string status)
         {
-            var sql = @"UPDATE AdminJobEntities 
-                        SET Title = @Title, Description = @Description, Status = @Status, OwnerId = @OwnerId 
-                        WHERE Id = @Id";
-            await _dbConnection.ExecuteAsync(sql, job);
+            using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
+            string sql = "SELECT * FROM Jobs WHERE Status = @Status";
+            return connection.Query<AdminJobEntity>(sql, new { Status = status });
         }
 
-        public async Task DeleteJobAsync(int id)
+        public AdminJobEntity UpdateJob(AdminJobEntity job)
         {
-            var sql = "UPDATE AdminJobEntities SET Status = 'Deleted' WHERE Id = @Id";
-            await _dbConnection.ExecuteAsync(sql, new { Id = id });
+            using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
+            string sql = @"UPDATE Jobs 
+                           SET Title = @Title, 
+                               Description = @Description, 
+                               Status = @Status 
+                           WHERE Id = @Id";
+            connection.Execute(sql, job);
+            return job;
+        }
+
+        public void DeleteJob(int id)
+        {
+            using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
+            string sql = "DELETE FROM Jobs WHERE Id = @Id";
+            connection.Execute(sql, new { Id = id });
         }
     }
 }

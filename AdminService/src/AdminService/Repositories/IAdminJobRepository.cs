@@ -4,10 +4,11 @@ namespace AdminService.Repositories
 {
     public interface IAdminJobRepository
     {
-        Task<IEnumerable<AdminJobEntity>> GetAllJobsAsync();
-        Task<AdminJobEntity> GetJobByIdAsync(int id);
-        Task AddJobAsync(AdminJobEntity job);
-        Task UpdateJobAsync(AdminJobEntity job);
-        Task DeleteJobAsync(int id);
+        AdminJobEntity InsertJob (AdminJobEntity AdminJobEntity);
+        AdminJobEntity GetById(int id);
+        IEnumerable<AdminJobEntity> GetAll();
+        IEnumerable<AdminJobEntity> GetByStatus(string status);
+        AdminJobEntity UpdateJob(AdminJobEntity AdminJobEntity);
+        void DeleteJob(int id);
     }
 }

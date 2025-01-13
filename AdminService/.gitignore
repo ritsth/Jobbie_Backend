@@ -72,7 +72,6 @@ secrets.json
 docker-compose.override.yml
 .dockerignore
 **/Dockerfile.*
-docker-compose.yml
 
 # Kubernetes
 *.yaml

@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  adminservice:
+    build:
+      context: .  # The context directory where your Dockerfile is located
+    ports:
+      - "5001:8080"  # Map container port 5000 to host port 5001
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"  # Set the environment to Development
+      ConnectionStrings__DefaultConnection: "Server=mysql_db;Database=AdminJobDB;User=Admin;Password=Admin;"
+    depends_on:
+      - Admindb  # Ensure db service starts before adminservice
+
+  Admindb:
+    image: mysql:8.0  # Use MySQL 8.0 image
+    container_name: mysql_db  # Name of the container
+    restart: always  # Restart the container on failure
+    environment:
+      MYSQL_ROOT_PASSWORD: Admin  # Root password for MySQL
+      MYSQL_DATABASE: AdminJobDB  # Initial database name
+      MYSQL_USER: Admin  # Create a user named 'Admin'
+      MYSQL_PASSWORD: Admin  # Password for the 'Admin' user
+    ports:
+      - "3306:3306"  # Expose MySQL's default port
+    volumes:
+      - db_data:/var/lib/mysql  # Persist database data
+
+volumes:
+  db_data:
