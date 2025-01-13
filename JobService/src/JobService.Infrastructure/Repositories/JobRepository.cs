@@ -12,7 +12,6 @@ namespace JobService.Infrastructure.Repositories
     /// </summary>
     public class JobRepository : IJobRepository
     {
-        
         private readonly string _connectionString;
 
         public JobRepository(string connectionString)
@@ -23,10 +22,11 @@ namespace JobService.Infrastructure.Repositories
         public Job InsertJob(Job job)
         {
             using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
-            string sql = @"INSERT INTO Jobs (Title, Description, Status, OwnerId)
-                           VALUES (@Title, @Description, @Status, @OwnerId);
+            string sql = @"INSERT INTO Jobs (Title, Description, Status, OwnerId, CreatedDateTime)
+                           VALUES (@Title, @Description, @Status, @OwnerId, @CreatedDateTime);
                            SELECT LAST_INSERT_ID();";
-            
+
+            job.CreatedDateTime = job.CreatedDateTime == default ? DateTime.UtcNow : job.CreatedDateTime;
             var id = connection.ExecuteScalar<int>(sql, job);
             job.Id = id;
             return job;
