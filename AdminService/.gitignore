@@ -77,3 +77,6 @@ docker-compose.override.yml
 *.yaml
 helm-chart/
 k8s/
+
+#env files
+.env
