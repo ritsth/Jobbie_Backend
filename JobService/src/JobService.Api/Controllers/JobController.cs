@@ -22,9 +22,16 @@ namespace JobService.Api.Controllers
         [HttpPost]
         public IActionResult PostJob([FromBody] Job job)
         {
+
+            Console.WriteLine("CreateJob endpoint hit."); 
+
+            if (job == null)
+                return BadRequest("Job cannot be null.");
+                
             // In a real scenario, you would also check the authenticated user's ID
             // For demonstration, assume OwnerId is passed
             var createdJob = _jobService.CreateJob(job);
+            
             return CreatedAtAction(nameof(GetJobById), new { id = createdJob.Id }, createdJob);
         }
 

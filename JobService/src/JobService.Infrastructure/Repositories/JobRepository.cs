@@ -12,6 +12,7 @@ namespace JobService.Infrastructure.Repositories
     /// </summary>
     public class JobRepository : IJobRepository
     {
+        
         private readonly string _connectionString;
 
         public JobRepository(string connectionString)

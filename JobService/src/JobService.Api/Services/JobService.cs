@@ -8,11 +8,11 @@ namespace JobService.Api.Services
     /// <summary>
     /// Implements the domain IJobService interface using the job repository.
     /// </summary>
-    public class JobService : IJobService
+    public class JobControlService  : IJobService
     {
         private readonly IJobRepository _jobRepository;
 
-        public JobService(IJobRepository jobRepository)
+        public JobControlService(IJobRepository jobRepository)
         {
             _jobRepository = jobRepository;
         }

@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobService.Infrastructure",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobService.Kafka", "src\JobService.Kafka\JobService.Kafka.csproj", "{3862A4D7-BCCE-45F1-9AA7-BB94B0AF030A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobService.Tests", "JobService.Tests\JobService.Tests.csproj", "{D22B3BD5-BF33-4994-9D43-E0EE44329F4B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{3862A4D7-BCCE-45F1-9AA7-BB94B0AF030A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3862A4D7-BCCE-45F1-9AA7-BB94B0AF030A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3862A4D7-BCCE-45F1-9AA7-BB94B0AF030A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D22B3BD5-BF33-4994-9D43-E0EE44329F4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D22B3BD5-BF33-4994-9D43-E0EE44329F4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D22B3BD5-BF33-4994-9D43-E0EE44329F4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D22B3BD5-BF33-4994-9D43-E0EE44329F4B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
