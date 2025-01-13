@@ -33,7 +33,12 @@ namespace AdminService.Repositories
         {
             using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
             string sql = "SELECT * FROM Jobs WHERE Id = @Id";
-            return connection.QueryFirstOrDefault<AdminJobEntity>(sql, new { Id = id });
+            var job = connection.QueryFirstOrDefault<AdminJobEntity>(sql, new { Id = id });
+            if (job == null)
+            {
+                throw new KeyNotFoundException($"Job with Id {id} not found.");
+            }
+            return job;
         }
 
         public IEnumerable<AdminJobEntity> GetAll()
