@@ -35,7 +35,7 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Database initialization failed: {ex.Message}");
+        Console.WriteLine($"Database initialization failed:");
     }
     finally
     {
