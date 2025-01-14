@@ -13,7 +13,7 @@ namespace JobService.Infrastructure.Database
                                 Description TEXT NOT NULL,
                                 Status VARCHAR(50) NOT NULL,
                                 OwnerId VARCHAR(100) NOT NULL,
-                                CreatedDateTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
                                );";
             connection.Execute(tableCheck);
         }

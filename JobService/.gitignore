@@ -46,10 +46,9 @@ project.assets.json
 .vscode/tasks.json
 
 # Docker
-**/[Dd]ockerfile
 **/docker-compose.yml
 **/*.dockerignore
-!docker-compose.yml  # (If you keep a template version in source)
+!docker-compose.yml  
 .docker/
 
 # OS-generated files

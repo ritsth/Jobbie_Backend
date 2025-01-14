@@ -21,7 +21,7 @@ namespace JobService.Domain.Entities
         [StringLength(50, MinimumLength = 1, ErrorMessage = "OwnerId must be between 1 and 50 characters.")]
         public string OwnerId { get; set; } = default!; // The user who created this job
 
-        public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     }
 }

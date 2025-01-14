@@ -5,6 +5,7 @@ using JobService.Domain.Repositories;
 using JobService.Infrastructure.Repositories;
 using JobService.Infrastructure.Config;
 using JobService.Grpc.Services;
+using JobService.Kafka.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,16 @@ string connectionString = builder.Configuration.GetConnectionString("MySqlConnec
 
 // Register dependencies
 builder.Services.AddSingleton<IJobRepository>(sp => new JobRepository(connectionString));
+
+// Register KafkaProducer with necessary configuration
+builder.Services.AddSingleton<KafkaProducer>(sp =>
+{
+    var bootstrapServers = builder.Configuration.GetValue<string>("Kafka:BootstrapServers");
+    var topic = builder.Configuration.GetValue<string>("Kafka:Topic");
+
+    return new KafkaProducer(bootstrapServers, topic);
+});
+
 
 builder.Services.AddGrpc();
 

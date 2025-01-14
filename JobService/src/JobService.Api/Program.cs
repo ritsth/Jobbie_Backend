@@ -42,6 +42,9 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+
+
+
 // Initialize the database at startup
 using (var scope = app.Services.CreateScope())
 {
@@ -49,10 +52,12 @@ using (var scope = app.Services.CreateScope())
     try
     {
         DbInitializer.Initialize(connection);
+        app.Logger.LogInformation("Database initialization successful.");
         Console.WriteLine("Database initialization successful.");
     }
     catch (Exception ex)
     {
+        app.Logger.LogError(ex, "Database initialization failed.");
         Console.WriteLine($"Database initialization failed: {ex.Message}");
     }
     finally
@@ -69,10 +74,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowReactLocalhost3000");
 
 // Enable routing and map controllers
 app.UseRouting();
+app.UseCors("AllowReactLocalhost3000");
 app.MapControllers();
 
 app.Run();

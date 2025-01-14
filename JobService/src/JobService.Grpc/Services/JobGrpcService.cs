@@ -1,92 +1,134 @@
+using System.Text.Json;
 using System.Threading.Tasks;
 using Grpc.Core;
 using JobService.Domain.Repositories;
 using JobService.Domain.Entities;
 using JobService.Grpc.Protos;
+using JobService.Kafka.Services;
 
 namespace JobService.Grpc.Services
 {
-    /// <summary>
-    /// gRPC service that handles admin operations on jobs.
-    /// </summary>
     public class JobGrpcService : JobAdmin.JobAdminBase
     {
         private readonly IJobRepository _jobRepository;
+        private readonly KafkaProducer _kafkaProducer;
 
-        public JobGrpcService(IJobRepository jobRepository)
+        public JobGrpcService(IJobRepository jobRepository, KafkaProducer kafkaProducer)
         {
             _jobRepository = jobRepository;
+            _kafkaProducer = kafkaProducer;
         }
 
-        public override Task<ApproveJobResponse> ApproveJob(ApproveJobRequest request, ServerCallContext context)
+        private async Task NotifyKafkaAsync(Job job, string action)
         {
-            // Use the PascalCase property "JobId"
+            var message = new
+            {
+                JobId = job.Id,
+                Title = job.Title,
+                Description = job.Description,
+                Status = job.Status,
+                OwnerId = job.OwnerId,
+                CreatedAt = job.CreatedAt,
+                Action = action
+            };
+
+            await _kafkaProducer.SendMessageAsync(job.Id.ToString(), message);
+        }
+
+        private async Task<NotifyJobResponse> HandleUpdateJob(NotifyJobRequest request)
+        {
             var job = _jobRepository.GetById(request.JobId);
             if (job == null)
             {
-                return Task.FromResult(new ApproveJobResponse
+                return new NotifyJobResponse
                 {
                     Success = false,
                     Message = "Job not found."
-                });
-            }
-
-            job.Status = "Approved";
-            _jobRepository.UpdateJob(job);
-
-            // In a real scenario, you might also send an event to Kafka, etc.
-
-            return Task.FromResult(new ApproveJobResponse
-            {
-                Success = true,
-                Message = "Job approved successfully."
-            });
-        }
-
-        public override Task<UpdateJobResponse> UpdateJob(UpdateJobRequest request, ServerCallContext context)
-        {
-            // Use "JobId", "Title", "Description", etc.
-            var job = _jobRepository.GetById(request.JobId);
-            if (job == null)
-            {
-                return Task.FromResult(new UpdateJobResponse
-                {
-                    Success = false,
-                    Message = "Job not found."
-                });
+                };
             }
 
             job.Title = request.Title;
             job.Description = request.Description;
+            job.Status = request.Status;
             _jobRepository.UpdateJob(job);
 
-            return Task.FromResult(new UpdateJobResponse
+            if (job.Status == "Approved")
+            {
+                await NotifyKafkaAsync(job, "Update");
+            }
+
+            return new NotifyJobResponse
             {
                 Success = true,
                 Message = "Job updated successfully."
-            });
+            };
         }
 
-        public override Task<DeleteJobResponse> DeleteJob(DeleteJobRequest request, ServerCallContext context)
+        private async Task<NotifyJobResponse> HandleDeleteJob(NotifyJobRequest request)
         {
-            // Use "JobId", "Success", "Message"
             var job = _jobRepository.GetById(request.JobId);
             if (job == null)
             {
-                return Task.FromResult(new DeleteJobResponse
+                return new NotifyJobResponse
                 {
                     Success = false,
                     Message = "Job not found."
-                });
+                };
             }
 
             _jobRepository.DeleteJob(job.Id);
 
-            return Task.FromResult(new DeleteJobResponse
+            if (job.Status == "Approved")
+            {
+                await NotifyKafkaAsync(job, "Delete");
+            }
+
+            return new NotifyJobResponse
             {
                 Success = true,
                 Message = "Job deleted successfully."
-            });
+            };
+        }
+
+        private async Task<NotifyJobResponse> HandleCreateJob(NotifyJobRequest request)
+        {
+            var job = new Job
+            {
+                Id = request.JobId,
+                Title = request.Title,
+                Description = request.Description,
+                Status = request.Status,
+                OwnerId = request.OwnerId,
+                CreatedAt = request.CreatedAt.ToDateTime()
+            };
+
+            _jobRepository.InsertJob(job);
+
+            if (job.Status == "Approved")
+            {
+                await NotifyKafkaAsync(job, "Create");
+            }
+
+            return new NotifyJobResponse
+            {
+                Success = true,
+                Message = "Job created successfully."
+            };
+        }
+
+        public override async Task<NotifyJobResponse> NotifyJob(NotifyJobRequest request, ServerCallContext context)
+        {
+            return request.Action.ToLower() switch
+            {
+                "create" => await HandleCreateJob(request),
+                "update" => await HandleUpdateJob(request),
+                "delete" => await HandleDeleteJob(request),
+                _ => new NotifyJobResponse
+                {
+                    Success = false,
+                    Message = $"Unsupported action: {request.Action}"
+                }
+            };
         }
     }
 }

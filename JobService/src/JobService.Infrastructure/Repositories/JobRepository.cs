@@ -22,11 +22,11 @@ namespace JobService.Infrastructure.Repositories
         public Job InsertJob(Job job)
         {
             using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
-            string sql = @"INSERT INTO Jobs (Title, Description, Status, OwnerId, CreatedDateTime)
-                           VALUES (@Title, @Description, @Status, @OwnerId, @CreatedDateTime);
+            string sql = @"INSERT INTO Jobs (Title, Description, Status, OwnerId, CreatedAt)
+                           VALUES (@Title, @Description, @Status, @OwnerId, @CreatedAt);
                            SELECT LAST_INSERT_ID();";
 
-            job.CreatedDateTime = job.CreatedDateTime == default ? DateTime.UtcNow : job.CreatedDateTime;
+            job.CreatedAt = job.CreatedAt == default ? DateTime.UtcNow : job.CreatedAt;
             var id = connection.ExecuteScalar<int>(sql, job);
             job.Id = id;
             return job;

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\admin_approval.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\notify_job.proto" GrpcServices="Both" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\JobService.Domain\JobService.Domain.csproj" />
     <ProjectReference Include="..\JobService.Infrastructure\JobService.Infrastructure.csproj" />
+    <ProjectReference Include="..\JobService.Kafka\JobService.Kafka.csproj" />
   </ItemGroup>
 
 </Project>
