@@ -12,6 +12,18 @@ services:
     depends_on:
       - Admindb  # Ensure db service starts before adminservice
 
+  admingrpcservice:
+    build:
+      context: .  # The context directory where your Dockerfile is located
+      dockerfile: src/AdminGrpcService/Dockerfile
+    ports:
+      - "5002:8080"  # Map container port 8080 to host port 5002
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ConnectionStrings__DefaultConnection: "Server=mysql_db;Database=GrpcAdminJobDB;User=Admin;Password=Admin;"
+    depends_on:
+      - Admindb  # Ensure db service starts before admingrpcservice
+
   Admindb:
     image: mysql:8.0  # Use MySQL 8.0 image
     container_name: mysql_db  # Name of the container

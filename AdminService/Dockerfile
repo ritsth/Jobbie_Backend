@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 # Set the working directory
-WORKDIR /src
+WORKDIR /app
 
 # Copy the csproj and restore any dependencies (via NuGet)
 COPY ./src/AdminService/AdminService.csproj ./src/AdminService/
@@ -10,7 +10,7 @@ RUN dotnet restore ./src/AdminService/AdminService.csproj
 
 # Copy the entire source code and publish it to the /out directory
 COPY ./src/AdminService/ ./src/AdminService/
-RUN dotnet publish ./src/AdminService/AdminService.csproj -c Release -o /out
+RUN dotnet publish ./src/AdminService/AdminService.csproj -c Release -o /out/adminservice
 
 # Use the official .NET runtime image for the final image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
@@ -19,7 +19,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 
 # Copy the published app from the build image
-COPY --from=build /out .
+COPY --from=build /out/adminservice .
 
 # Expose the application port
 EXPOSE 80
