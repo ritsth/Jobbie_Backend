@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Builder;
 using AdminService.Repositories;
 using AdminService.Config;
 using AdminService.Database;
+using AdminGrpcService.Clients;
+using JobService.Grpc.Protos;
+using Grpc.Net.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,15 @@ builder.Services.AddScoped<IAdminJobRepository>(serviceProvider =>
 
 // Add services to the container.
 builder.Services.AddGrpc();
+
+
+//Single dependency injection for the JobAdminClient
+builder.Services.AddSingleton<JobAdmin.JobAdminClient>(sp =>
+{
+    var channel = GrpcChannel.ForAddress("http://localhost:5001"); 
+    return new JobAdmin.JobAdminClient(channel);
+});
+
 
 var app = builder.Build();
 
