@@ -16,50 +16,74 @@ namespace AdminGrpcService.Services
         {
             _adminJobRepository = adminJobRepository;
         }
-        public override Task<NotifyJobResponse> NotifyJob(NotifyJobRequest request, ServerCallContext context)
+
+        public override async Task<NotifyJobResponse> NotifyJob(NotifyJobRequest request, ServerCallContext context)
         {
-            // Simulate processing the job notification based on the action
             string action = request.Action.ToLower();
             bool success = false;
             string message;
 
-            switch (action)
+            try
             {
-                case "create":
-                    // Handle job creation logic in database
-                    // !!!
-                    _adminJobRepository.InsertJob(new AdminJobEntity
-                    {
-                        // Title = request.Title,
-                        // Description = request.Description,
-                        // Status = request.Status,
-                        // CreatedDateTime  = DateTime.UtcNow
-                    });
+                switch (action)
+                {
+                    case "create":
+                        // Handle job creation
+                        var newJob = new AdminJobEntity
+                        {
+                            Title = request.Title,
+                            Description = request.Description,
+                            Status = request.Status,
+                            OwnerId = request.OwnerId,
+                            CreatedDateTime = request.CreatedAt.ToDateTime()
+                        };
+                        var createdJob = _adminJobRepository.InsertJob(newJob);
 
+                        success = true;
+                        message = $"Job '{createdJob.Title}' created successfully with ID {createdJob.Id}.";
+                        break;
 
-                    success = true; // Assume successful creation
-                    message = $"Job '{request.Title}' created successfully.";
-                    break;
-                case "update":
-                    // Handle job update logic
-                    success = true; // Assume successful update
-                    message = $"Job '{request.Title}' updated successfully.";
-                    break;
-                case "delete":
-                    // Handle job deletion logic
-                    success = true; // Assume successful deletion
-                    message = $"Job '{request.Title}' deleted successfully.";
-                    break;
-                default:
-                    message = "Invalid action. Please specify 'Create', 'Update', or 'Delete'.";
-                    break;
+                    case "update":
+                        // Handle job update
+                        var updateJob = new AdminJobEntity
+                        {
+                            Id = request.JobId,
+                            Title = request.Title,
+                            Description = request.Description,
+                            Status = request.Status
+                        };
+                        _adminJobRepository.UpdateJob(updateJob);
+
+                        success = true;
+                        message = $"Job '{updateJob.Title}' updated successfully.";
+                        break;
+
+                    case "delete":
+                        // Handle job deletion
+                        _adminJobRepository.DeleteJob(request.JobId);
+
+                        success = true;
+                        message = $"Job with ID {request.JobId} deleted successfully.";
+                        break;
+
+                    default:
+                        message = "Invalid action. Please specify 'Create', 'Update', or 'Delete'.";
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log exception here if necessary
+                success = false;
+                message = $"Error processing action '{action}': {ex.Message}";
             }
 
-            return Task.FromResult(new NotifyJobResponse
+            return await Task.FromResult(new NotifyJobResponse
             {
                 Success = success,
                 Message = message
             });
         }
+
     }
 }
