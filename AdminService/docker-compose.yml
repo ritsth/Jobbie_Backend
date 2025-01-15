@@ -2,24 +2,25 @@ version: "3.8"
 
 services:
   adminservice:
+    container_name: adminservice
     build:
-      context: .  # The context directory where your Dockerfile is located
+      context: ./src  # The context directory where your Dockerfile is located
+      dockerfile: ./AdminService/Dockerfile
     ports:
       - "5001:8080"  # Map container port 5000 to host port 5001
     environment:
-      ASPNETCORE_ENVIRONMENT: "Development"  # Set the environment to Development
       ConnectionStrings__DefaultConnection: "Server=mysql_db;Database=AdminJobDB;User=Admin;Password=Admin;"
     depends_on:
       - Admindb  # Ensure db service starts before adminservice
 
   admingrpcservice:
+    container_name: admingrpcservice
     build:
-      context: .  # The context directory where your Dockerfile is located
-      dockerfile: src/AdminGrpcService/Dockerfile
+      context: ./src  # The context directory where your Dockerfile is located
+      dockerfile: ./AdminGrpcService/Dockerfile
     ports:
       - "5002:8080"  # Map container port 8080 to host port 5002
     environment:
-      ASPNETCORE_ENVIRONMENT: "Development"
       ConnectionStrings__DefaultConnection: "Server=mysql_db;Database=GrpcAdminJobDB;User=Admin;Password=Admin;"
     depends_on:
       - Admindb  # Ensure db service starts before admingrpcservice

@@ -24,8 +24,4 @@
     <ProjectReference Include="..\AdminService\AdminService.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="appsettings.Development.json" />
-  </ItemGroup>
-
 </Project>
