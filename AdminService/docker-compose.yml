@@ -11,7 +11,8 @@ services:
     environment:
       ConnectionStrings__DefaultConnection: "Server=mysql_db;Database=AdminJobDB;User=Admin;Password=Admin;"
     depends_on:
-      - Admindb  # Ensure db service starts before adminservice
+      Admindb:
+        condition: service_healthy
 
   admingrpcservice:
     container_name: admingrpcservice
@@ -23,21 +24,27 @@ services:
     environment:
       ConnectionStrings__DefaultConnection: "Server=mysql_db;Database=GrpcAdminJobDB;User=Admin;Password=Admin;"
     depends_on:
-      - Admindb  # Ensure db service starts before admingrpcservice
+      Admindb:
+        condition: service_healthy
 
   Admindb:
-    image: mysql:8.0  # Use MySQL 8.0 image
-    container_name: mysql_db  # Name of the container
-    restart: always  # Restart the container on failure
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: Admin  # Root password for MySQL
-      MYSQL_DATABASE: AdminJobDB  # Initial database name
-      MYSQL_USER: Admin  # Create a user named 'Admin'
-      MYSQL_PASSWORD: Admin  # Password for the 'Admin' user
+      MYSQL_ROOT_PASSWORD: Admin
+      MYSQL_DATABASE: AdminJobDB
+      MYSQL_USER: Admin
+      MYSQL_PASSWORD: Admin
     ports:
-      - "3306:3306"  # Expose MySQL's default port
+      - "3306:3306"
     volumes:
-      - db_data:/var/lib/mysql  # Persist database data
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u Admin -pAdmin || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   db_data:
