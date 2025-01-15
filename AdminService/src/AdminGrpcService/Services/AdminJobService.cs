@@ -28,7 +28,19 @@ namespace AdminGrpcService.Services
                 switch (action)
                 {
                     case "create":
-                        // Handle job creation
+                        //notify the user about the approval request (using notification service? Rest api?)
+                        //then if yes, create the job, and success: true
+                        //if no, success: false
+
+                        bool userResponse = true; //this should be the response from the user
+
+                        if(!userResponse)
+                        {
+                            success = false;
+                            message = "User declined the request to create the job.";
+                            break;
+                        }
+                        //Else Handle job creation
                         var newJob = new AdminJobEntity
                         {
                             Title = request.Title,

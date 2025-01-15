@@ -19,24 +19,24 @@ builder.Services.AddGrpc();
 
 var app = builder.Build();
 
-// Initialize the database at startup for MY SQL
-using (var scope = app.Services.CreateScope())
-{
-    var connection = MySqlDapperConfig.CreateConnection(connectionString);
-    try
-    {
-        DbInitializer.Initialize(connection);
-        Console.WriteLine("Database initialization successful.");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Database initialization failed: {ex}");
-    }
-    finally
-    {
-        connection.Dispose();
-    }
-}
+// // Initialize the database at startup for MY SQL
+// using (var scope = app.Services.CreateScope())
+// {
+//     var connection = MySqlDapperConfig.CreateConnection(connectionString);
+//     try
+//     {
+//         DbInitializer.Initialize(connection);
+//         Console.WriteLine("Database initialization successful.");
+//     }
+//     catch (Exception ex)
+//     {
+//         Console.WriteLine($"Database initialization failed: {ex}");
+//     }
+//     finally
+//     {
+//         connection.Dispose();
+//     }
+// }
 
 // Configure the HTTP request pipeline.
 app.MapGrpcService<AdminJobService>();
