@@ -6,6 +6,13 @@ using AdminService.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add custom configuration files since the changed the default appsettings.json to appsettings.AdminGrpcService.json
+builder.Configuration
+    .AddJsonFile("appsettings.AdminGrpcService.json", optional: true, reloadOnChange: true)
+    .AddJsonFile($"appsettings.AdminGrpcService.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+
 //Database connection string mySQL
 string connectionString = builder.Configuration.GetConnectionString("MySqlConnection") 
                           ?? "Server=mysql_db;Database=AdminJobDB;User=Admin;Password=Admin;";
