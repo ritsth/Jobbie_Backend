@@ -20,6 +20,21 @@ string connectionString = builder.Configuration.GetConnectionString("MySqlConnec
 builder.Services.AddScoped<IAdminJobRepository>(serviceProvider => 
     new AdminJobRepository(connectionString));;
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "AllowReactLocalhost3000",
+        policy =>
+        {
+            // Allow only a specific origin (React dev server)
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyMethod()    // GET, POST, PUT, DELETE etc.
+                  .AllowAnyHeader();   // e.g. Content-Type, Authorization
+            
+            // If you need credentials or cookies:
+            // .AllowCredentials();
+        });
+});
+
 
 var app = builder.Build();
 
@@ -55,6 +70,10 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+
+// Enable routing and map controllers
+app.UseRouting();
+app.UseCors("AllowReactLocalhost3000");
 app.MapControllers();
 
 app.Run();
