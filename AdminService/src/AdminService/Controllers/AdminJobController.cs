@@ -53,6 +53,18 @@ namespace AdminService.Controllers
         [HttpPost]
         public IActionResult CreateJob([FromBody] AdminJobEntity job)
         {
+            //Send message to JOB Service about the job is created
+            // var request = new NotifyJobRequest
+            // {
+            //     JobId = jobId,
+            //     Title = title,
+            //     Description = description,
+            //     Status = status,
+            //     OwnerId = ownerId,
+            //     CreatedAt = Timestamp.FromDateTime(DateTime.UtcNow),
+            //     Action = "update"
+            // };
+
             try
             {
                 if (job == null)
