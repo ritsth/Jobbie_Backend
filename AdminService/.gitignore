@@ -1,0 +1,82 @@
+# Build Folders
+bin/
+obj/
+
+# User-Specific Files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+
+# IDE Configuration Files
+.vscode/
+.idea/
+*.code-workspace
+
+# Rider files
+.idea/
+*.sln.iml
+
+# Visual Studio 2019 and later
+.vs/
+.vscode/
+
+# Packages
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+
+# Test Results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+*.codecoverage
+
+# Cache Files
+*.lock.json
+*.lock
+
+# Publish Outputs
+publish/
+wwwroot/
+app.publish/
+
+# Temporary Files
+*.tmp
+*.temp
+*.pid
+*.seed
+*.log
+
+# Secrets
+secrets.json
+
+# Runtime-generated files
+*.runtimeconfig.dev.json
+*.deps.json
+*.dll
+*.exe
+*.pdb
+*.cache
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+**/Dockerfile.*
+
+# Kubernetes
+*.yaml
+helm-chart/
+k8s/
+
+#env files
+.env
