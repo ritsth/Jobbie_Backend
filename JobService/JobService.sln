@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobService.Api", "src\JobService.Api\JobService.Api.csproj", "{372493EA-13FD-4C47-9CC9-764654A2A537}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobService.Grpc", "src\JobService.Grpc\JobService.Grpc.csproj", "{4648BC20-592C-42A9-9692-4224BFC601A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobService.Domain", "src\JobService.Domain\JobService.Domain.csproj", "{BCE7E305-E2BD-425E-B8F7-4BE53BF20649}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobService.Infrastructure", "src\JobService.Infrastructure\JobService.Infrastructure.csproj", "{31ACFAD5-9B1F-408A-A180-247D4D36EAE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobService.Kafka", "src\JobService.Kafka\JobService.Kafka.csproj", "{3862A4D7-BCCE-45F1-9AA7-BB94B0AF030A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobService.Tests", "JobService.Tests\JobService.Tests.csproj", "{D22B3BD5-BF33-4994-9D43-E0EE44329F4B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{372493EA-13FD-4C47-9CC9-764654A2A537}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{372493EA-13FD-4C47-9CC9-764654A2A537}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{372493EA-13FD-4C47-9CC9-764654A2A537}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{372493EA-13FD-4C47-9CC9-764654A2A537}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4648BC20-592C-42A9-9692-4224BFC601A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4648BC20-592C-42A9-9692-4224BFC601A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4648BC20-592C-42A9-9692-4224BFC601A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4648BC20-592C-42A9-9692-4224BFC601A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCE7E305-E2BD-425E-B8F7-4BE53BF20649}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCE7E305-E2BD-425E-B8F7-4BE53BF20649}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCE7E305-E2BD-425E-B8F7-4BE53BF20649}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCE7E305-E2BD-425E-B8F7-4BE53BF20649}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31ACFAD5-9B1F-408A-A180-247D4D36EAE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31ACFAD5-9B1F-408A-A180-247D4D36EAE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31ACFAD5-9B1F-408A-A180-247D4D36EAE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31ACFAD5-9B1F-408A-A180-247D4D36EAE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3862A4D7-BCCE-45F1-9AA7-BB94B0AF030A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3862A4D7-BCCE-45F1-9AA7-BB94B0AF030A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3862A4D7-BCCE-45F1-9AA7-BB94B0AF030A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3862A4D7-BCCE-45F1-9AA7-BB94B0AF030A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D22B3BD5-BF33-4994-9D43-E0EE44329F4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D22B3BD5-BF33-4994-9D43-E0EE44329F4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D22B3BD5-BF33-4994-9D43-E0EE44329F4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D22B3BD5-BF33-4994-9D43-E0EE44329F4B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
