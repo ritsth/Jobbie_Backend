@@ -25,6 +25,10 @@ builder.Services.AddSingleton<KafkaProducer>(sp =>
     return new KafkaProducer(bootstrapServers, topic);
 });
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
 
 builder.Services.AddGrpc();
 

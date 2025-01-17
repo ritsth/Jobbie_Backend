@@ -13,7 +13,6 @@ namespace JobService.Api.Controllers
     {
         private readonly IJobService _jobService;
 
-        // NEW: Inject the gRPC client
         private readonly JobAdmin.JobAdminClient _jobAdminClient;
 
         public JobController(IJobService jobService, JobAdmin.JobAdminClient jobAdminClient)
@@ -85,11 +84,11 @@ namespace JobService.Api.Controllers
         {
             jobToUpdate.Id = id;
 
-            // 1. Update the job in the database
+            // Update the job in the database
             var updatedJob = _jobService.UpdateJob(jobToUpdate, ownerId);
             if (updatedJob == null) return NotFound();
 
-            // 2. Notify AdminService via gRPC
+            // Notify AdminService via gRPC
             var grpcResponse = await _jobAdminClient.NotifyJobAsync(new NotifyJobRequest
             {
                 JobId = updatedJob.Id,
@@ -111,10 +110,10 @@ namespace JobService.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteJob(int id, [FromQuery] string ownerId)
         {
-            // 1. Delete the job in the database
             _jobService.DeleteJob(id, ownerId);
 
-            // 2. Notify AdminService via gRPC
+
+            // Notify AdminService via gRPC
             var grpcResponse = await _jobAdminClient.NotifyJobAsync(new NotifyJobRequest
             {
                 JobId = id,

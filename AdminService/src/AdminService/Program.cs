@@ -19,7 +19,7 @@ builder.Services.AddSwaggerGen();
 
 // Read connection string from appsettings.json or environment variable
 string connectionString = builder.Configuration.GetConnectionString("MySqlConnection") 
-                          ?? "Server=mysql_db;Database=AdminJobDB;User=Admin;Password=Admin;";
+                          ?? "Server=admin_mysql_db;Database=AdminJobDB;User=Admin;Password=Admin;";
 
 // Dependency injection: Register AdminJobRepository with the connection string
 builder.Services.AddScoped<IAdminJobRepository>(serviceProvider => 
@@ -31,7 +31,7 @@ builder.Services.AddScoped<IAdminJobRepository>(serviceProvider =>
 //Single dependency injection for the JobAdminClient
 builder.Services.AddSingleton<JobAdmin.JobAdminClient>(sp =>
 {
-    var channel = GrpcChannel.ForAddress("http://localhost:5003"); 
+    var channel = GrpcChannel.ForAddress("http://jobservicegrpc:8080"); 
     return new JobAdmin.JobAdminClient(channel);
 });
 

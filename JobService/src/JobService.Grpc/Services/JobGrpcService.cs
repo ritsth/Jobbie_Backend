@@ -39,24 +39,37 @@ public class JobGrpcService : JobAdmin.JobAdminBase
             Action = action
         };
 
+        var serializedMessage = JsonSerializer.Serialize(message);
+        _logger.LogInformation("Sending Kafka message: {Message}", serializedMessage);
+
         await _kafkaProducer.SendMessageAsync(job.Id.ToString(), message);
+
+        _logger.LogInformation("Kafka message sent successfully for JobId: {JobId}, Action: {Action}", job.Id, action);
     }
 
     private NotifyJobResponse ValidateRequest(NotifyJobRequest request)
     {
         if (request == null)
+        {
+            _logger.LogWarning("Received null request.");
             return new NotifyJobResponse { Success = false, Message = "Request cannot be null." };
+        }
 
         if (string.IsNullOrWhiteSpace(request.Action))
+        {
+            _logger.LogWarning("Request is missing the 'Action' field.");
             return new NotifyJobResponse { Success = false, Message = "Action is required." };
+        }
 
+        _logger.LogInformation("Validation passed for request: {Request}", JsonSerializer.Serialize(request));
         return new NotifyJobResponse { Success = true };
     }
 
     private async Task<NotifyJobResponse> HandleCreateJob(NotifyJobRequest request)
     {
-        var createdAt = request.CreatedAt?.ToDateTime() ?? DateTime.UtcNow;
+        _logger.LogInformation("Processing 'Create' action for JobId: {JobId}", request.JobId);
 
+        var createdAt = request.CreatedAt?.ToDateTime() ?? DateTime.UtcNow;
 
         var job = new Job
         {
@@ -69,9 +82,11 @@ public class JobGrpcService : JobAdmin.JobAdminBase
         };
 
         _jobRepository.InsertJob(job);
+        _logger.LogInformation("Job created successfully: {Job}", JsonSerializer.Serialize(job));
 
         if (job.Status == "Approved")
         {
+            _logger.LogInformation("Job approved. Sending 'Create' action to Kafka for JobId: {JobId}", job.Id);
             await NotifyKafkaAsync(job, ActionCreate);
         }
 
@@ -84,6 +99,8 @@ public class JobGrpcService : JobAdmin.JobAdminBase
 
     private async Task<NotifyJobResponse> HandleUpdateJob(NotifyJobRequest request)
     {
+        _logger.LogInformation("Processing 'Update' action for JobId: {JobId}", request.JobId);
+
         var job = _jobRepository.GetById(request.JobId);
         if (job == null)
         {
@@ -99,9 +116,11 @@ public class JobGrpcService : JobAdmin.JobAdminBase
         job.Description = request.Description;
         job.Status = request.Status;
         _jobRepository.UpdateJob(job);
+        _logger.LogInformation("Job updated successfully: {Job}", JsonSerializer.Serialize(job));
 
         if (job.Status == "Approved")
         {
+            _logger.LogInformation("Job approved. Sending 'Update' action to Kafka for JobId: {JobId}", job.Id);
             await NotifyKafkaAsync(job, ActionUpdate);
         }
 
@@ -114,6 +133,8 @@ public class JobGrpcService : JobAdmin.JobAdminBase
 
     private async Task<NotifyJobResponse> HandleDeleteJob(NotifyJobRequest request)
     {
+        _logger.LogInformation("Processing 'Delete' action for JobId: {JobId}", request.JobId);
+
         var job = _jobRepository.GetById(request.JobId);
         if (job == null)
         {
@@ -125,10 +146,12 @@ public class JobGrpcService : JobAdmin.JobAdminBase
             };
         }
 
-         _jobRepository.DeleteJob(job.Id);
+        _jobRepository.DeleteJob(job.Id);
+        _logger.LogInformation("Job deleted successfully for JobId: {JobId}", job.Id);
 
         if (job.Status == "Approved")
         {
+            _logger.LogInformation("Job approved. Sending 'Delete' action to Kafka for JobId: {JobId}", job.Id);
             await NotifyKafkaAsync(job, ActionDelete);
         }
 
@@ -141,13 +164,16 @@ public class JobGrpcService : JobAdmin.JobAdminBase
 
     public override async Task<NotifyJobResponse> NotifyJob(NotifyJobRequest request, ServerCallContext context)
     {
+        _logger.LogInformation("Received NotifyJob gRPC call with request: {Request}", JsonSerializer.Serialize(request));
+
         var validationResponse = ValidateRequest(request);
         if (!validationResponse.Success)
         {
+            _logger.LogWarning("Validation failed for request: {Request}", JsonSerializer.Serialize(request));
             return validationResponse;
         }
 
-        return request.Action.ToLower() switch
+        var response = request.Action.ToLower() switch
         {
             ActionCreate => await HandleCreateJob(request),
             ActionUpdate => await HandleUpdateJob(request),
@@ -158,5 +184,8 @@ public class JobGrpcService : JobAdmin.JobAdminBase
                 Message = $"Unsupported action: {request.Action}"
             }
         };
+
+        _logger.LogInformation("NotifyJob response: {Response}", JsonSerializer.Serialize(response));
+        return response;
     }
 }
