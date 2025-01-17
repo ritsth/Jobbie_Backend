@@ -16,7 +16,7 @@ namespace JobService.Kafka.Services
             var config = new ProducerConfig
             {
                 BootstrapServers = bootstrapServers,
-                Acks = Acks.All // Ensures delivery guarantee
+                Acks = Acks.All 
             };
             _producer = new ProducerBuilder<string, string>(config).Build();
             _topic = topic;
