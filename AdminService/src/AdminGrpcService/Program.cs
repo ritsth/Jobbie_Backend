@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Builder;
 using AdminService.Infra.Config;
 using AdminService.Infra.Database;
 using AdminService.Infra.Repositories;
-using AdminGrpcService.Clients;
 using JobService.Grpc.Protos;
 using Grpc.Net.Client;
 

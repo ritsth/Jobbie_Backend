@@ -1,6 +1,9 @@
 using AdminService.Infra.Entities;
 using AdminService.Infra.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using AdminService.Clients;
+using JobService.Grpc.Protos;
+using Google.Protobuf.WellKnownTypes;
 
 namespace AdminService.Controllers
 {
@@ -9,10 +12,12 @@ namespace AdminService.Controllers
     public class AdminJobController : ControllerBase
     {
         private readonly IAdminJobRepository _adminJobRepository;
+        private readonly AdminJobClient _adminJobClient;
 
-        public AdminJobController(IAdminJobRepository adminJobRepository)
+        public AdminJobController(IAdminJobRepository adminJobRepository, AdminJobClient adminJobClient)
         {
             _adminJobRepository = adminJobRepository;
+            _adminJobClient = adminJobClient;
         }
 
         // GET: api/AdminJob
@@ -54,16 +59,18 @@ namespace AdminService.Controllers
         public IActionResult CreateJob([FromBody] AdminJobEntity job)
         {
             //Send message to JOB Service about the job is created
-            // var request = new NotifyJobRequest
-            // {
-            //     JobId = jobId,
-            //     Title = title,
-            //     Description = description,
-            //     Status = status,
-            //     OwnerId = ownerId,
-            //     CreatedAt = Timestamp.FromDateTime(DateTime.UtcNow),
-            //     Action = "update"
-            // };
+            var request = new NotifyJobRequest
+            {
+                JobId = job.Id,
+                Title = job.Title,
+                Description = job.Description,
+                Status = job.Status,
+                OwnerId = job.OwnerId,
+                CreatedAt = Timestamp.FromDateTime(job.CreatedDateTime), // Convert DateTime to Timestamp
+                Action = "create"
+            };
+
+            _adminJobClient.CreateJobAsync(request);
 
             try
             {
@@ -134,5 +141,7 @@ namespace AdminService.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        
     }
 }

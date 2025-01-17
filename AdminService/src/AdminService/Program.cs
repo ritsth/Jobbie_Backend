@@ -1,7 +1,10 @@
 using AdminService.Infra.Config;
 using AdminService.Infra.Database;
 using AdminService.Infra.Repositories;
-
+using JobService.Grpc.Protos;
+using AdminService.Clients;
+using Microsoft.AspNetCore.Builder;
+using Grpc.Net.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,14 +15,36 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+
 // Read connection string from appsettings.json or environment variable
 string connectionString = builder.Configuration.GetConnectionString("MySqlConnection") 
                           ?? "Server=mysql_db;Database=AdminJobDB;User=Admin;Password=Admin;";
 
 // Dependency injection: Register AdminJobRepository with the connection string
 builder.Services.AddScoped<IAdminJobRepository>(serviceProvider => 
-    new AdminJobRepository(connectionString));;
+    new AdminJobRepository(connectionString));
 
+
+
+
+//Single dependency injection for the JobAdminClient
+builder.Services.AddSingleton<JobAdmin.JobAdminClient>(sp =>
+{
+    var channel = GrpcChannel.ForAddress("http://localhost:5003"); 
+    return new JobAdmin.JobAdminClient(channel);
+});
+
+// Register the AdminJobClient (wrapper for the gRPC client)
+builder.Services.AddTransient<AdminJobClient>(sp =>
+{
+    var jobAdminClient = sp.GetRequiredService<JobAdmin.JobAdminClient>();
+    return new AdminJobClient(jobAdminClient);
+});
+
+
+
+//Frontend cors policy config
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "AllowReactLocalhost3000",

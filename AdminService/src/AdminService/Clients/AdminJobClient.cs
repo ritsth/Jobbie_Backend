@@ -5,7 +5,7 @@ using JobService.Grpc.Protos;
 using Grpc.Core;
 using Google.Protobuf.WellKnownTypes;
 
-namespace AdminGrpcService.Clients
+namespace AdminService.Clients
 {
     public class AdminJobClient
     {
@@ -19,7 +19,6 @@ namespace AdminGrpcService.Clients
         // Create Job Method
         public async Task CreateJobAsync(NotifyJobRequest request)
         {
-
             try
             {
                 var response = await _client.NotifyJobAsync(request);
@@ -41,16 +40,6 @@ namespace AdminGrpcService.Clients
         // Update Job Method
         public async Task UpdateJobAsync(NotifyJobRequest request)
         {
-            // var request = new NotifyJobRequest
-            // {
-            //     JobId = jobId,
-            //     Title = title,
-            //     Description = description,
-            //     Status = status,
-            //     OwnerId = ownerId,
-            //     CreatedAt = Timestamp.FromDateTime(DateTime.UtcNow),
-            //     Action = "update"
-            // };
 
             try
             {
