@@ -58,7 +58,7 @@ namespace AdminService.Controllers
         [HttpPost]
         public IActionResult CreateJob([FromBody] AdminJobEntity job)
         {
-            //Send message to JOB Service about the job is created
+            //Send message to JOB Service about the job is Approved by Admin
             var request = new NotifyJobRequest
             {
                 JobId = job.Id,
@@ -92,6 +92,20 @@ namespace AdminService.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateJob(int id, [FromBody] AdminJobEntity job)
         {
+            //Send message to JOB Service about the job is Approved by Admin
+            var request = new NotifyJobRequest
+            {
+                JobId = job.Id,
+                Title = job.Title,
+                Description = job.Description,
+                Status = job.Status,
+                OwnerId = job.OwnerId,
+                CreatedAt = Timestamp.FromDateTime(job.CreatedDateTime), // Convert DateTime to Timestamp
+                Action = "update"
+            };
+
+            _adminJobClient.UpdateJobAsync(request);
+
             try
             {
                 if (job == null || job.Id != id)
@@ -110,8 +124,10 @@ namespace AdminService.Controllers
 
         // DELETE: api/AdminJob/{id}
         [HttpDelete("{id}")]
-        public IActionResult DeleteJob(int id)
+        public async IActionResult DeleteJob(int id)
         {
+            await _adminJobClient.DeleteJobAsync(id);
+
             try
             {
                 _adminJobRepository.DeleteJob(id);
