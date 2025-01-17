@@ -124,9 +124,9 @@ namespace AdminService.Controllers
 
         // DELETE: api/AdminJob/{id}
         [HttpDelete("{id}")]
-        public async IActionResult DeleteJob(int id)
+        public IActionResult DeleteJob(int id)
         {
-            await _adminJobClient.DeleteJobAsync(id);
+            _adminJobClient.DeleteJobAsync(id);
 
             try
             {
