@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-service-grpc-deployment
+  namespace: my-microservices
+  labels:
+    app: job-service-grpc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: job-service-grpc
+  template:
+    metadata:
+      labels:
+        app: job-service-grpc
+    spec:
+      containers:
+        - name: job-service-grpc-container
+          image: <my-registry>/job-service-grpc:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: job-service-config
+            - secretRef:
+                name: job-service-secret
+          # Example using TCP probe
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10

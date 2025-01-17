@@ -4,13 +4,13 @@ services:
     image: mysql:8.0
     container_name: mysql_db
     environment:
-      MYSQL_ROOT_PASSWORD: root       # Use this for root password
-      MYSQL_DATABASE: jobdb           # Default database
+      MYSQL_ROOT_PASSWORD: root       
+      MYSQL_DATABASE: jobdb           
     ports:
       - "3306:3306"
     networks:
       - jobservice_net
-    healthcheck:                      # Healthcheck to ensure MySQL is ready
+    healthcheck:                      
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       retries: 5

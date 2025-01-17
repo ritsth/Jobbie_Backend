@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-service-api-deployment
+  namespace: my-microservices
+  labels:
+    app: job-service-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: job-service-api
+  template:
+    metadata:
+      labels:
+        app: job-service-api
+    spec:
+      containers:
+        - name: job-service-api-container
+          image: <my-registry>/job-service-api:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: job-service-config
+            - secretRef:
+                name: job-service-secret
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
