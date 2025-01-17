@@ -49,10 +49,7 @@ build/
 .DS_Store
 Thumbs.db
 
-# Kubernetes files
-kubeconfig
-*.yaml
-*.yml
+
 
 # Terraform files
 .terraform/
