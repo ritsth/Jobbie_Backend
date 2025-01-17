@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AdminService.Entities
+namespace AdminService.Infra.Entities
 {
     public class AdminJobEntity
     {

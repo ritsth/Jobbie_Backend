@@ -1,5 +1,5 @@
-using AdminService.Entities;
-using AdminService.Repositories;
+using AdminService.Infra.Entities;
+using AdminService.Infra.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdminService.Controllers

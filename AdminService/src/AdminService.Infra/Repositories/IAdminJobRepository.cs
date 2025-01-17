@@ -1,6 +1,6 @@
-using AdminService.Entities;
+using AdminService.Infra.Entities;
 
-namespace AdminService.Repositories
+namespace AdminService.Infra.Repositories
 {
     public interface IAdminJobRepository
     {

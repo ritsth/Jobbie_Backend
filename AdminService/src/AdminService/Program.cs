@@ -1,6 +1,6 @@
-using AdminService.Config;
-using AdminService.Database;
-using AdminService.Repositories;
+using AdminService.Infra.Config;
+using AdminService.Infra.Database;
+using AdminService.Infra.Repositories;
 
 
 var builder = WebApplication.CreateBuilder(args);

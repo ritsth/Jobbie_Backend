@@ -1,10 +1,10 @@
 using Dapper;
 using System.Data;
-using AdminService.Entities;
+using AdminService.Infra.Entities;
 using Microsoft.Extensions.Configuration;
-using AdminService.Config;
+using AdminService.Infra.Config;
 
-namespace AdminService.Repositories
+namespace AdminService.Infra.Repositories
 {
     public class AdminJobRepository : IAdminJobRepository
     {

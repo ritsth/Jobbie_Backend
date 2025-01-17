@@ -1,7 +1,7 @@
 using System.Data;
 using Dapper;
 
-namespace AdminService.Database
+namespace AdminService.Infra.Database
 {
     public static class DbInitializer
     {

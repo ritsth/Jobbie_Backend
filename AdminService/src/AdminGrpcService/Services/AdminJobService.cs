@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Google.Protobuf.WellKnownTypes;
 using JobService.Grpc.Protos;
-using AdminService.Repositories;
-using AdminService.Entities;
+using AdminService.Infra.Repositories;
+using AdminService.Infra.Entities;
 
 namespace AdminGrpcService.Services
 {
