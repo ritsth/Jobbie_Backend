@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: admin-service-config
+  namespace: jobbie-microservices
+data:
+  ConnectionStrings__DefaultConnection: "Server=admin_mysql_db;Database=AdminJobDB;User=Admin;Password=Admin;"
