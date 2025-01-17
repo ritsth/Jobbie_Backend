@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -17,7 +16,6 @@ type MySQLRepository struct {
 }
 
 func NewMySQLRepository(dsn string) (*MySQLRepository, error) {
-	log.Printf("Connecting to MySQL database at %s\n", dsn)
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("unable to open DB: %w", err)

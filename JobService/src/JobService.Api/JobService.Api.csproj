@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.29.3" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.67.0" />
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.67.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.69.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
@@ -15,6 +22,10 @@
     <ProjectReference Include="..\JobService.Domain\JobService.Domain.csproj" />
     <ProjectReference Include="..\JobService.Infrastructure\JobService.Infrastructure.csproj" />
     <ProjectReference Include="..\JobService.Kafka\JobService.Kafka.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\JobService.Grpc\Protos\notify_job.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>

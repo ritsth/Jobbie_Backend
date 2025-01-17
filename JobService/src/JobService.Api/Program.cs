@@ -6,6 +6,7 @@ using JobService.Infrastructure.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using JobService.Grpc.Protos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,14 @@ builder.Services.AddCors(options =>
             // If you need credentials or cookies:
             // .AllowCredentials();
         });
+});
+
+builder.Services.AddGrpcClient<JobAdmin.JobAdminClient>(o =>
+{
+    // Use the container name or DNS name in Docker Compose (e.g., "jobservicegrpc")
+    // and the port exposed (e.g., 8080) within the Docker network.
+    // If you expose 5001:8080 externally, you can use http://localhost:5001 for local dev.
+    o.Address = new Uri("http://jobservicegrpc:8080");
 });
 
 // Add controllers
