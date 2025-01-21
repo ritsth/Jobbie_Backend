@@ -2,8 +2,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: job-service-config
-  namespace: my-microservices
+  namespace: jobbie-backend
 data:
-  ConnectionStrings__MySqlConnection: "Server=job_mysql_db;Database=jobdb;User=root;Password=root;"
+  ConnectionStrings__MySqlConnection: "Server=mysql-jobservice-headless;Database=jobdb;User=user;Password=password;"
   Kafka__BootstrapServers: "kafka-headless:9092"
   Kafka__Topic: "jobs-topic"

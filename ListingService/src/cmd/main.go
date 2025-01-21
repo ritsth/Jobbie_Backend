@@ -21,9 +21,13 @@ import (
 
 func main() {
 	// Load configuration from environment variables
-	mysqlDSN := os.Getenv("MYSQL_DSN")
-	if mysqlDSN == "" {
-		mysqlDSN = "user:password@tcp(mysql:3306)/jobsdb?parseTime=true"
+	mysqlUser := os.Getenv("DB_USER")
+	mysqlPassword := os.Getenv("DB_PASSWORD")
+	mysqlDSN := fmt.Sprintf("%s:%s@tcp(mysql-listservice-headless:3306)/listdb?parseTime=true", mysqlUser, mysqlPassword)
+
+	log.Printf("MySQL DSN: %s", mysqlDSN)
+	if mysqlUser == "" || mysqlPassword == "" {
+		log.Fatalf("Database credentials are missing.")
 	}
 
 	kafkaBrokers := []string{os.Getenv("KAFKA_BROKER")}
@@ -80,15 +84,14 @@ func main() {
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 
 	go func() {
-		fmt.Println("Listing service is running on port 8080")
+		log.Println("Listing service is running on port 8080")
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Error starting server: %v", err)
 		}
 	}()
 
-	// Wait for shutdown signal
 	<-stop
-	fmt.Println("Shutting down server...")
+	log.Println("Shutting down server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -103,5 +106,5 @@ func main() {
 	}
 
 	wg.Wait()
-	fmt.Println("Server stopped gracefully")
+	log.Println("Server stopped gracefully")
 }

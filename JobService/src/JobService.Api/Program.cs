@@ -11,28 +11,33 @@ using JobService.Grpc.Protos;
 var builder = WebApplication.CreateBuilder(args);
 
 // Read connection string from appsettings.json or environment variable
-string connectionString = builder.Configuration.GetConnectionString("MySqlConnection") 
-                          ?? "Server=mysql_db;Database=jobdb;User=root;Password=root;";
+string connectionString = builder.Configuration.GetConnectionString("MySqlConnection");
+
 
 // Register repository and domain services
 builder.Services.AddSingleton<IJobRepository>(sp => new JobRepository(connectionString));
 builder.Services.AddScoped<IJobService, JobService.Api.Services.JobControlService>();
 
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: "AllowReactLocalhost3000",
-        policy =>
-        {
-            // Allow only a specific origin (React dev server)
-            policy.WithOrigins("http://localhost:3000")
-                  .AllowAnyMethod()    // GET, POST, PUT, DELETE etc.
-                  .AllowAnyHeader();   // e.g. Content-Type, Authorization
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy(name: "AllowReactLocalhost3000",
+//         policy =>
+//         {
+//             // Allow only a specific origin (React dev server)
+//             policy.WithOrigins("http://localhost:3000")
+//                   .AllowAnyMethod()    // GET, POST, PUT, DELETE etc.
+//                   .AllowAnyHeader();   // e.g. Content-Type, Authorization
             
-            // If you need credentials or cookies:
-            // .AllowCredentials();
-        });
+//         });
+// });
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(8080); // HTTP
+    //serverOptions.ListenAnyIP(443, listenOptions => listenOptions.UseHttps()); // HTTPS
 });
+
 
 builder.Services.AddGrpcClient<JobAdmin.JobAdminClient>(o =>
 {
@@ -52,7 +57,8 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 
-
+Console.WriteLine($"Connection string: {connectionString}");
+app.Logger.LogInformation($"Connection string: {connectionString}");
 
 // Initialize the database at startup
 using (var scope = app.Services.CreateScope())
@@ -86,7 +92,7 @@ if (app.Environment.IsDevelopment())
 
 // Enable routing and map controllers
 app.UseRouting();
-app.UseCors("AllowReactLocalhost3000");
+// app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-adminservice
+  namespace: jobbie-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-adminservice
+  serviceName: mysql-adminservice-headless
+  template:
+    metadata:
+      labels:
+        app: mysql-adminservice
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              value: "admindb"
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-adminservice-secret
+                  key: user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-adminservice-secret
+                  key: password
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-adminservice-secret
+                  key: root-password
+          volumeMounts:
+            - name: admin-mysql-persistent-storage
+              mountPath: /var/lib/mysql
+      volumes:
+      - name: admin-mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: admin-mysql-pv-claim

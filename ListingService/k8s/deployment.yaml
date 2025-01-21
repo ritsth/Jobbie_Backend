@@ -2,11 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: listing-service-deployment
-  namespace: my-microservices
+  namespace: jobbie-backend
   labels:
     app: listing-service
 spec:
   replicas: 1
+
   selector:
     matchLabels:
       app: listing-service
@@ -17,7 +18,8 @@ spec:
     spec:
       containers:
         - name: listing-service-container
-          image: <my-registry>/listing-service:latest
+          image: advanceduno/listingservice:latest
+          imagePullPolicy: "Always"
           ports:
             - containerPort: 8080
           envFrom:
@@ -25,22 +27,35 @@ spec:
                 name: listing-service-config
             - secretRef:
                 name: listing-service-secret
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 15
-            periodSeconds: 10
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-listservice-secret
+                  key: user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-listservice-secret
+                  key: password
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://kafka-headless:9092
+          # readinessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 8080
+          #   initialDelaySeconds: 20
+          #   periodSeconds: 10
+          # livenessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 8080
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+          # resources:
+          #   requests:
+          #     cpu: 100m
+          #     memory: 128Mi
+          #   limits:
+          #     cpu: 500m
+          #     memory: 512Mi

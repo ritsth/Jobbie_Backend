@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: admin-api-deployment
-  namespace: jobbie-microservices
+  namespace: jobbie-backend
   labels:
     app: admin-api
 spec:
@@ -17,7 +17,8 @@ spec:
     spec:
       containers:
         - name: admin-api-container
-          image: advanceduno/admin-api:latest
+          image: advanceduno/adminserviceapi:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           envFrom:
@@ -25,15 +26,15 @@ spec:
                 name: admin-service-config
             - secretRef:
                 name: admin-service-secret
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 15
-            periodSeconds: 10
+          # readinessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 8080
+          #   initialDelaySeconds: 20
+          #   periodSeconds: 10
+          # livenessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 8080
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 20

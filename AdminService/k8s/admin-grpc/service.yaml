@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: admin-grpc
-  namespace: jobbie-microservices
+  namespace: jobbie-backend
 spec:
   selector:
     app: admin-grpc

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: admin-grpc-deployment
-  namespace: jobbie-microservices
+  namespace: jobbie-backend
   labels:
     app: admin-grpc
 spec:
@@ -17,7 +17,8 @@ spec:
     spec:
       containers:
         - name: admin-grpc-container
-          image: advanceduno/admin-grpc:latest
+          image: advanceduno/adminservicegrpc:latest
+          imagePullPolicy: "Always"
           ports:
             - containerPort: 8080
           envFrom:
@@ -25,13 +26,13 @@ spec:
                 name: admin-service-config
             - secretRef:
                 name: admin-service-secret
-          readinessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          livenessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 15
-            periodSeconds: 10
+          # readinessProbe:
+          #   tcpSocket:
+          #     port: 8080
+          #   initialDelaySeconds: 20
+          #   periodSeconds: 10
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: 8080
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 20

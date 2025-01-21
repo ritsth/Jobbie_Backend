@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: job-service-grpc-deployment
-  namespace: my-microservices
+  namespace: jobbie-backend
   labels:
     app: job-service-grpc
 spec:
@@ -17,7 +17,8 @@ spec:
     spec:
       containers:
         - name: job-service-grpc-container
-          image: <my-registry>/job-service-grpc:latest
+          image: advanceduno/jobservicegrpc:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           envFrom:
@@ -25,14 +26,13 @@ spec:
                 name: job-service-config
             - secretRef:
                 name: job-service-secret
-          # Example using TCP probe
-          readinessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          livenessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 15
-            periodSeconds: 10
+          # readinessProbe:
+          #   tcpSocket:
+          #     port: 8080
+          #   initialDelaySeconds: 20
+          #   periodSeconds: 10
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: 8080
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 20

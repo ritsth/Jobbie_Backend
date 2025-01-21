@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jobbie-backend-ingress
+  namespace: jobbie-backend
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Disable SSL redirection for HTTP (use HTTPS in prod)
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: jobbie-backend.local
+      http:
+        paths:
+          - path: /listing
+            pathType: Prefix
+            backend:
+              service:
+                name: listing-service
+                port:
+                  number: 8080
+          - path: /job/api
+            pathType: Prefix
+            backend:
+              service:
+                name: job-service-api
+                port:
+                  number: 8080
+          - path: /admin/api
+            pathType: Prefix
+            backend:
+              service:
+                name: admin-api
+                port:
+                  number: 8080

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: job-service-grpc
-  namespace: my-microservices
+  namespace: jobbie-backend
 spec:
   selector:
     app: job-service-grpc
