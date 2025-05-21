@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-service-api-deployment
+  namespace: jobbie-backend
+  labels:
+    app: job-service-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: job-service-api
+  template:
+    metadata:
+      labels:
+        app: job-service-api
+    spec:
+      containers:
+        - name: job-service-api-container
+          image: advanceduno/jobserviceapi:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080  # HTTP
+            - containerPort: 443   # HTTPS
+          envFrom:
+            - configMapRef:
+                name: job-service-config
+            - secretRef:
+                name: job-service-secret
+          # readinessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 8080
+          #   initialDelaySeconds: 20
+          #   periodSeconds: 10
+          # livenessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 8080
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 20

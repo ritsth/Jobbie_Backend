@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-listservice
+  namespace: jobbie-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-listservice
+  serviceName: mysql-listservice-headless
+  template:
+    metadata:
+      labels:
+        app: mysql-listservice
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              value: "listdb"
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-listservice-secret
+                  key: user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-listservice-secret
+                  key: password
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-listservice-secret
+                  key: root-password
+          volumeMounts:
+            - name: list-mysql-persistent-storage
+              mountPath: /var/lib/mysql
+      volumes:
+      - name: list-mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: list-mysql-pv-claim

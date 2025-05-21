@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-service-grpc-deployment
+  namespace: jobbie-backend
+  labels:
+    app: job-service-grpc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: job-service-grpc
+  template:
+    metadata:
+      labels:
+        app: job-service-grpc
+    spec:
+      containers:
+        - name: job-service-grpc-container
+          image: advanceduno/jobservicegrpc:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: job-service-config
+            - secretRef:
+                name: job-service-secret
+          # readinessProbe:
+          #   tcpSocket:
+          #     port: 8080
+          #   initialDelaySeconds: 20
+          #   periodSeconds: 10
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: 8080
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 20

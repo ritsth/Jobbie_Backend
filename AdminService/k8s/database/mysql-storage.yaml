@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: admin-mysql-pv-volume
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: manual
+  hostPath:
+    path: "/mnt/data/admin-mysql"
+  claimRef:
+    name: admin-mysql-pv-claim
+    namespace: jobbie-backend
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: admin-mysql-pv-claim
+  namespace: jobbie-backend
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

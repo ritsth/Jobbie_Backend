@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: listing-service-deployment
+  namespace: jobbie-backend
+  labels:
+    app: listing-service
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: listing-service
+  template:
+    metadata:
+      labels:
+        app: listing-service
+    spec:
+      containers:
+        - name: listing-service-container
+          image: advanceduno/listingservice:latest
+          imagePullPolicy: "Always"
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: listing-service-config
+            - secretRef:
+                name: listing-service-secret
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-listservice-secret
+                  key: user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-listservice-secret
+                  key: password
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://kafka-headless:9092
+          # readinessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 8080
+          #   initialDelaySeconds: 20
+          #   periodSeconds: 10
+          # livenessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 8080
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+          # resources:
+          #   requests:
+          #     cpu: 100m
+          #     memory: 128Mi
+          #   limits:
+          #     cpu: 500m
+          #     memory: 512Mi

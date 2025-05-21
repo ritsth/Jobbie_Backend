@@ -1,0 +1,74 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories
+vendor/
+go.mod
+go.sum
+
+# Go workspace file
+go.work
+
+# IDE-specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Log files
+*.log
+logs/
+
+# Build artifacts
+build/
+*.o
+*.a
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+
+
+# Terraform files
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+# Local development files
+local/
+tmp/
+temp/
+
+# Ignore binary files created during testing
+__debug_bin
+
+# Ignore coverage files
+coverage.txt
+coverage.html
+coverage.out
+
+# Ignore generated files
+generated/
