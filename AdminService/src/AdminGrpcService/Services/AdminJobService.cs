@@ -41,6 +41,7 @@ namespace AdminGrpcService.Services
             {
                 var newJob = new AdminJobEntity
                 {
+                    JobId = request.JobId,
                     Title = request.Title,
                     Description = request.Description,
                     Status = request.Status,
@@ -51,7 +52,7 @@ namespace AdminGrpcService.Services
                 var createdJob = _adminJobRepository.InsertJob(newJob);
 
                 success = true;
-                message = $"Approved! Job '{createdJob.Title}' created successfully with ID {createdJob.Id}.";
+                message = $"Approved! Job '{createdJob.Title}' created successfully with ID {createdJob.JobId}.";
                 _logger.LogInformation(message);
             }
             catch (Exception ex)
@@ -94,7 +95,7 @@ namespace AdminGrpcService.Services
 
                 var updateJob = new AdminJobEntity
                 {
-                    Id = request.JobId,
+                    JobId = request.JobId,
                     Title = request.Title,
                     Description = request.Description,
                     Status = request.Status

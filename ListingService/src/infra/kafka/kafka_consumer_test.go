@@ -13,7 +13,7 @@ import (
 type MockJobService struct {
 	CreateJobFunc func(job domain.Job) error
 	UpdateJobFunc func(job domain.Job) error
-	DeleteJobFunc func(jobID int64) error
+	DeleteJobFunc func(jobID string) error
 	ListJobsFunc  func(ctx context.Context) ([]domain.Job, error)
 }
 
@@ -25,7 +25,7 @@ func (m *MockJobService) UpdateJob(job domain.Job) error {
 	return m.UpdateJobFunc(job)
 }
 
-func (m *MockJobService) DeleteJob(jobID int64) error {
+func (m *MockJobService) DeleteJob(jobID string) error {
 	return m.DeleteJobFunc(jobID)
 }
 
@@ -40,7 +40,7 @@ func TestKafkaConsumer_ConsumeClaim(t *testing.T) {
 	// Create a mock JobService
 	mockJobService := &MockJobService{
 		CreateJobFunc: func(job domain.Job) error {
-			assert.Equal(t, int64(1), job.ID)
+			assert.Equal(t, "aaaa", job.JobID)
 			assert.Equal(t, "Software Engineer", job.Title)
 			assert.Equal(t, "Develop software applications", job.Description)
 			assert.Equal(t, "Open", job.Status)

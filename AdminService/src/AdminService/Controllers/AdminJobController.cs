@@ -35,13 +35,13 @@ namespace AdminService.Controllers
             }
         }
 
-        // GET: api/AdminJob/{id}
-        [HttpGet("{id}")]
-        public IActionResult GetJobById(int id)
+        // GET: api/AdminJob/{jobId}
+        [HttpGet("{jobId}")]
+        public IActionResult GetJobById(string jobId)
         {
             try
             {
-                var job = _adminJobRepository.GetById(id);
+                var job = _adminJobRepository.GetById(jobId);
                 if (job == null)
                 {
                     return NotFound();
@@ -59,9 +59,10 @@ namespace AdminService.Controllers
         public IActionResult CreateJob([FromBody] AdminJobEntity job)
         {
             //Send message to JOB Service about the job is Approved by Admin
+            string newJobId = Guid.NewGuid().ToString();
             var request = new NotifyJobRequest
             {
-                JobId = job.Id,
+                JobId = newJobId,
                 Title = job.Title,
                 Description = job.Description,
                 Status = job.Status,
@@ -70,7 +71,7 @@ namespace AdminService.Controllers
                 Action = "create"
             };
 
-            _adminJobClient.CreateJobAsync(request);
+            
 
             try
             {
@@ -79,8 +80,10 @@ namespace AdminService.Controllers
                     return BadRequest("Job data is null.");
                 }
 
+                
                 var createdJob = _adminJobRepository.InsertJob(job);
-                return CreatedAtAction(nameof(GetJobById), new { id = createdJob.Id }, createdJob);
+                _adminJobClient.CreateJobAsync(request);
+                return CreatedAtAction(nameof(GetJobById), new { jobId = createdJob.JobId }, createdJob);
             }
             catch (Exception ex)
             {
@@ -88,14 +91,14 @@ namespace AdminService.Controllers
             }
         }
 
-        // PUT: api/AdminJob/{id}
-        [HttpPut("{id}")]
-        public IActionResult UpdateJob(int id, [FromBody] AdminJobEntity job)
+        // PUT: api/AdminJob/{jobId}
+        [HttpPut("{jobId}")]
+        public IActionResult UpdateJob(string jobId, [FromBody] AdminJobEntity job)
         {
             //Send message to JOB Service about the job is Approved by Admin
             var request = new NotifyJobRequest
             {
-                JobId = job.Id,
+                JobId = job.JobId,
                 Title = job.Title,
                 Description = job.Description,
                 Status = job.Status,
@@ -104,17 +107,19 @@ namespace AdminService.Controllers
                 Action = "update"
             };
 
-            _adminJobClient.UpdateJobAsync(request);
 
             try
             {
-                if (job == null || job.Id != id)
+                if (job == null || job.JobId != jobId)
                 {
                     return BadRequest("Job data is invalid.");
                 }
-
+                
                 var updatedJob = _adminJobRepository.UpdateJob(job);
+                _adminJobClient.UpdateJobAsync(request);
                 return Ok(updatedJob);
+
+                
             }
             catch (Exception ex)
             {
@@ -122,15 +127,16 @@ namespace AdminService.Controllers
             }
         }
 
-        // DELETE: api/AdminJob/{id}
-        [HttpDelete("{id}")]
-        public IActionResult DeleteJob(int id)
+        // DELETE: api/AdminJob/{jobId}
+        [HttpDelete("{jobId}")]
+        public IActionResult DeleteJob(string jobId)
         {
-            _adminJobClient.DeleteJobAsync(id);
+            
 
             try
             {
-                _adminJobRepository.DeleteJob(id);
+                _adminJobRepository.DeleteJob(jobId);
+                _adminJobClient.DeleteJobAsync(jobId);
                 return NoContent(); // 204 No Content indicates the delete was successful
             }
             catch (Exception ex)

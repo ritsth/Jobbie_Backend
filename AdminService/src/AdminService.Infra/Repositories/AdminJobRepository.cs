@@ -18,25 +18,25 @@ namespace AdminService.Infra.Repositories
         public AdminJobEntity InsertJob(AdminJobEntity job)
         {
             using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
-            string sql = @"INSERT INTO Jobs (Title, Description, Status, OwnerId, CreatedDateTime)
-                           VALUES (@Title, @Description, @Status, @OwnerId, @CreatedDateTime);
-                           SELECT LAST_INSERT_ID();";
+            string sql = @"INSERT INTO Jobs (JobId, Title, Description, Status, OwnerId, CreatedDateTime)
+                           VALUES (@JobId, @Title, @Description, @Status, @OwnerId, @CreatedDateTime);";
 
             // job.CreatedDateTime = job.CreatedDateTime == default ? DateTime.UtcNow : job.CreatedDateTime;
-            var id = connection.ExecuteScalar<int>(sql, job);
-            job.Id = id;
-            job.OwnerId = "Admin";
+            // job.Id = Guid.NewGuid().ToString();
+            // job.OwnerId = "Admin";
+            connection.ExecuteScalar<int>(sql, job);
+            
             return job;
         }
 
-        public AdminJobEntity GetById(int id)
+        public AdminJobEntity GetById(string jobId)
         {
             using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
-            string sql = "SELECT * FROM Jobs WHERE Id = @Id";
-            var job = connection.QueryFirstOrDefault<AdminJobEntity>(sql, new { Id = id });
+            string sql = "SELECT * FROM Jobs WHERE JobId = @JobId";
+            var job = connection.QueryFirstOrDefault<AdminJobEntity>(sql, new { JobId = jobId });
             if (job == null)
             {
-                throw new KeyNotFoundException($"Job with Id {id} not found.");
+                throw new KeyNotFoundException($"Job with JobId {jobId} not found.");
             }
             return job;
         }
@@ -62,16 +62,16 @@ namespace AdminService.Infra.Repositories
                            SET Title = @Title, 
                                Description = @Description, 
                                Status = @Status 
-                           WHERE Id = @Id";
+                           WHERE JobId = @JobId";
             connection.Execute(sql, job);
             return job;
         }
 
-        public void DeleteJob(int id)
+        public void DeleteJob(string  jobId)
         {
             using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
-            string sql = "DELETE FROM Jobs WHERE Id = @Id";
-            connection.Execute(sql, new { Id = id });
+            string sql = "DELETE FROM Jobs WHERE JobId = @JobId";
+            connection.Execute(sql, new { JobId = jobId });
         }
     }
 }

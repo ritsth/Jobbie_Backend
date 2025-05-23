@@ -19,18 +19,18 @@ builder.Services.AddSingleton<IJobRepository>(sp => new JobRepository(connection
 builder.Services.AddScoped<IJobService, JobService.Api.Services.JobControlService>();
 
 
-// builder.Services.AddCors(options =>
-// {
-//     options.AddPolicy(name: "AllowReactLocalhost3000",
-//         policy =>
-//         {
-//             // Allow only a specific origin (React dev server)
-//             policy.WithOrigins("http://localhost:3000")
-//                   .AllowAnyMethod()    // GET, POST, PUT, DELETE etc.
-//                   .AllowAnyHeader();   // e.g. Content-Type, Authorization
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "AllowReactLocalhost3000",
+        policy =>
+        {
+            // Allow only a specific origin (React dev server)
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyMethod()    // GET, POST, PUT, DELETE etc.
+                  .AllowAnyHeader();   // e.g. Content-Type, Authorization
             
-//         });
-// });
+        });
+});
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
@@ -44,7 +44,7 @@ builder.Services.AddGrpcClient<JobAdmin.JobAdminClient>(o =>
     // Use the container name or DNS name in Docker Compose (e.g., "jobservicegrpc")
     // and the port exposed (e.g., 8080) within the Docker network.
     // If you expose 5001:8080 externally, you can use http://localhost:5001 for local dev.
-    o.Address = new Uri("http://admingrpcservice:8080");
+    o.Address = new Uri("http://admin-grpc:8080");
 });
 
 // Add controllers
@@ -92,7 +92,11 @@ if (app.Environment.IsDevelopment())
 
 // Enable routing and map controllers
 app.UseRouting();
-// app.UseHttpsRedirection();
+app.UseCors("AllowReactLocalhost3000");
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.MapControllers();
 
 app.Run();

@@ -37,7 +37,7 @@ namespace JobService.Api.Controllers
             // Notify AdminService via gRPC
             var grpcResponse = await _jobAdminClient.NotifyJobAsync(new NotifyJobRequest
             {
-                JobId = createdJob.Id,
+                JobId = createdJob.JobId,
                 Title = createdJob.Title,
                 Description = createdJob.Description,
                 Status = createdJob.Status,
@@ -50,14 +50,14 @@ namespace JobService.Api.Controllers
                 return Problem($"Failed to notify admin service: {grpcResponse.Message}");
 
             // Return standard REST CreatedAtAction response
-            return CreatedAtAction(nameof(GetJobById), new { id = createdJob.Id }, createdJob);
+            return CreatedAtAction(nameof(GetJobById), new { jobId = createdJob.JobId }, createdJob);
         }
 
-        // GET: api/Job/{id}
-        [HttpGet("{id}")]
-        public IActionResult GetJobById(int id)
+        // GET: api/Job/{jobId}
+        [HttpGet("{jobId}")]
+        public IActionResult GetJobById(string jobId)
         {
-            var job = _jobService.GetJobById(id);
+            var job = _jobService.GetJobById(jobId);
             if (job == null) return NotFound();
             return Ok(job);
         }
@@ -78,11 +78,11 @@ namespace JobService.Api.Controllers
             return Ok(jobs);
         }
 
-        // PUT: api/Job/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateJob(int id, [FromBody] Job jobToUpdate, [FromQuery] string ownerId)
+        // PUT: api/Job/{jobId}
+        [HttpPut("{jobId}")]
+        public async Task<IActionResult> UpdateJob(string jobId, [FromBody] Job jobToUpdate, [FromQuery] string ownerId)
         {
-            jobToUpdate.Id = id;
+            jobToUpdate.JobId = jobId;
 
             // Update the job in the database
             var updatedJob = _jobService.UpdateJob(jobToUpdate, ownerId);
@@ -91,7 +91,7 @@ namespace JobService.Api.Controllers
             // Notify AdminService via gRPC
             var grpcResponse = await _jobAdminClient.NotifyJobAsync(new NotifyJobRequest
             {
-                JobId = updatedJob.Id,
+                JobId = updatedJob.JobId,
                 Title = updatedJob.Title,
                 Description = updatedJob.Description,
                 Status = updatedJob.Status,
@@ -106,17 +106,17 @@ namespace JobService.Api.Controllers
             return Ok(updatedJob);
         }
 
-        // DELETE: api/Job/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteJob(int id, [FromQuery] string ownerId)
+        // DELETE: api/Job/{jobId}
+        [HttpDelete("{jobId}")]
+        public async Task<IActionResult> DeleteJob(string jobId, [FromQuery] string ownerId)
         {
-            _jobService.DeleteJob(id, ownerId);
+            _jobService.DeleteJob(jobId, ownerId);
 
 
             // Notify AdminService via gRPC
             var grpcResponse = await _jobAdminClient.NotifyJobAsync(new NotifyJobRequest
             {
-                JobId = id,
+                JobId = jobId,
                 CreatedAt = Timestamp.FromDateTime(System.DateTime.UtcNow),
                 Action = "Delete"
             });

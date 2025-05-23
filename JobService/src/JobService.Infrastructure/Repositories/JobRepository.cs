@@ -22,21 +22,22 @@ namespace JobService.Infrastructure.Repositories
         public Job InsertJob(Job job)
         {
             using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
-            string sql = @"INSERT INTO Jobs (Title, Description, Status, OwnerId, CreatedAt)
-                           VALUES (@Title, @Description, @Status, @OwnerId, @CreatedAt);
-                           SELECT LAST_INSERT_ID();";
+            string sql = @"INSERT INTO Jobs (JobId, Title, Description, Status, OwnerId, CreatedAt)
+                           VALUES (@JobId, @Title, @Description, @Status, @OwnerId, @CreatedAt);";
 
             job.CreatedAt = job.CreatedAt == default ? DateTime.UtcNow : job.CreatedAt;
-            var id = connection.ExecuteScalar<int>(sql, job);
-            job.Id = id;
+            //job.JobId = Guid.NewGuid().ToString();
+
+            connection.ExecuteScalar<int>(sql, job);
+
             return job;
         }
 
-        public Job GetById(int id)
+        public Job GetById(string  jobId)
         {
             using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
-            string sql = "SELECT * FROM Jobs WHERE Id = @Id";
-            return connection.QueryFirstOrDefault<Job>(sql, new { Id = id });
+            string sql = "SELECT * FROM Jobs WHERE JobId = @JobId";
+            return connection.QueryFirstOrDefault<Job>(sql, new { JobId = jobId });
         }
 
         public IEnumerable<Job> GetAll()
@@ -60,16 +61,16 @@ namespace JobService.Infrastructure.Repositories
                            SET Title = @Title, 
                                Description = @Description, 
                                Status = @Status 
-                           WHERE Id = @Id";
+                           WHERE JobId = @JobId";
             connection.Execute(sql, job);
             return job;
         }
 
-        public void DeleteJob(int id)
+        public void DeleteJob(string  jobId)
         {
             using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
-            string sql = "DELETE FROM Jobs WHERE Id = @Id";
-            connection.Execute(sql, new { Id = id });
+            string sql = "DELETE FROM Jobs WHERE Id = @JobId";
+            connection.Execute(sql, new { JobId = jobId });
         }
     }
 }

@@ -60,7 +60,7 @@ namespace AdminService.Clients
         }
 
         // Delete Job Method
-        public async Task DeleteJobAsync(int jobId)
+        public async Task DeleteJobAsync(string jobId)
         {
             var request = new NotifyJobRequest
             {

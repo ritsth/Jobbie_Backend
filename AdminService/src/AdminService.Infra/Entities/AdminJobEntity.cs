@@ -5,7 +5,7 @@ namespace AdminService.Infra.Entities
     public class AdminJobEntity
     {
         [Key]
-        public int Id { get; set; }
+        public string JobId { get; set; }
 
         [Required]
         [StringLength(100, MinimumLength = 1, ErrorMessage = "Title must be between 1 and 100 characters.")]

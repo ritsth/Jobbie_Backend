@@ -35,13 +35,13 @@ func NewMySQLRepository(dsn string) (*MySQLRepository, error) {
 }
 
 func (r *MySQLRepository) CreateJob(job *domain.Job) error {
-	query := `INSERT INTO jobs (id, title, description, status, owner_id, created_at)
+	query := `INSERT INTO jobs (job_id, title, description, status, owner_id, created_at)
               VALUES (?, ?, ?, ?, ?, ?)`
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	_, err := r.DB.ExecContext(ctx, query,
-		job.ID,
+		job.JobID,
 		job.Title,
 		job.Description,
 		job.Status,
@@ -54,7 +54,7 @@ func (r *MySQLRepository) CreateJob(job *domain.Job) error {
 func (r *MySQLRepository) UpdateJob(job *domain.Job) error {
 	query := `UPDATE jobs 
               SET title = ?, description = ?, status = ?, owner_id = ? 
-              WHERE id = ?`
+              WHERE job_id = ?`
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -63,13 +63,13 @@ func (r *MySQLRepository) UpdateJob(job *domain.Job) error {
 		job.Description,
 		job.Status,
 		job.OwnerID,
-		job.ID,
+		job.JobID,
 	)
 	return err
 }
 
-func (r *MySQLRepository) DeleteJob(jobID int64) error {
-	query := `DELETE FROM jobs WHERE id = ?`
+func (r *MySQLRepository) DeleteJob(jobID string) error {
+	query := `DELETE FROM jobs WHERE job_id = ?`
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -78,7 +78,7 @@ func (r *MySQLRepository) DeleteJob(jobID int64) error {
 }
 
 func (r *MySQLRepository) ListJobs(ctx context.Context) ([]domain.Job, error) {
-	query := `SELECT id, title, description, status, owner_id, created_at FROM jobs`
+	query := `SELECT job_id, title, description, status, owner_id, created_at FROM jobs`
 	rows, err := r.DB.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func (r *MySQLRepository) ListJobs(ctx context.Context) ([]domain.Job, error) {
 	for rows.Next() {
 		var job domain.Job
 		if err := rows.Scan(
-			&job.ID,
+			&job.JobID,
 			&job.Title,
 			&job.Description,
 			&job.Status,
