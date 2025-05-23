@@ -9,6 +9,7 @@ env:
   IMAGE_REPOSITORY: jobbie_adminservice
   CONTAINER_REGISTRY: jobbieregistry.azurecr.io
   DOCKERFILE_PATH: AdminService/src/AdminGrpcService/Dockerfile
+  GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
 jobs:
   build-and-push:
