@@ -3,13 +3,18 @@ kind: Ingress
 metadata:
   name: jobbie-backend-ingress
   namespace: jobbie-backend
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Disable SSL redirection for HTTP (use HTTPS in prod)
+  # annotations:
+  #   nginx.ingress.kubernetes.io/rewrite-target: /
+  #   nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Disable SSL redirection for HTTP (use HTTPS in prod)
+  #   nginx.ingress.kubernetes.io/enable-cors: "true"
+  #   nginx.ingress.kubernetes.io/cors-allow-origin: "http://localhost:3000"
+  #   nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+  #   nginx.ingress.kubernetes.io/cors-allow-headers: "Content-Type, Authorization"
+
 spec:
   ingressClassName: nginx
   rules:
-    - host: jobbie-backend.local
+    - host: unolee.com
       http:
         paths:
           - path: /listing
@@ -19,14 +24,14 @@ spec:
                 name: listing-service
                 port:
                   number: 8080
-          - path: /job/api
+          - path: /api/Job
             pathType: Prefix
             backend:
               service:
                 name: job-service-api
                 port:
                   number: 8080
-          - path: /admin/api
+          - path: /api/AdminJob
             pathType: Prefix
             backend:
               service:

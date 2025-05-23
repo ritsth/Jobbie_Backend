@@ -31,7 +31,7 @@ builder.Services.AddScoped<IAdminJobRepository>(serviceProvider =>
 //Single dependency injection for the JobAdminClient
 builder.Services.AddSingleton<JobAdmin.JobAdminClient>(sp =>
 {
-    var channel = GrpcChannel.ForAddress("http://jobservicegrpc:8080"); 
+    var channel = GrpcChannel.ForAddress("http://job-service-grpc:8080"); 
     return new JobAdmin.JobAdminClient(channel);
 });
 

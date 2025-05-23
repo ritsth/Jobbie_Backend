@@ -18,6 +18,7 @@ spec:
       containers:
         - name: job-service-grpc-container
           image: advanceduno/jobservicegrpc:1
+
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

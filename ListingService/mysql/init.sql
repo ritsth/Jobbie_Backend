@@ -4,7 +4,7 @@ USE jobsdb;
 
 -- Check if the table already exists
 CREATE TABLE IF NOT EXISTS jobs (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    job_id VARCHAR(255) AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     status VARCHAR(50) NOT NULL,

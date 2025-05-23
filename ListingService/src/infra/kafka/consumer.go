@@ -83,7 +83,7 @@ func (kc *KafkaConsumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim
 		log.Printf("Received message: Topic=%s, Partition=%d, Offset=%d\n", msg.Topic, msg.Partition, msg.Offset)
 
 		var incoming struct {
-			JobId       int64     `json:"jobId"`
+			JobId       string    `json:"jobId"`
 			Title       string    `json:"title"`
 			Description string    `json:"description"`
 			Status      string    `json:"status"`
@@ -114,7 +114,7 @@ func (kc *KafkaConsumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim
 
 			// Pass the parsed createdAt to the job service
 			err = kc.jobService.CreateJob(domain.Job{
-				ID:          incoming.JobId,
+				JobID:       incoming.JobId,
 				Title:       incoming.Title,
 				Description: incoming.Description,
 				Status:      incoming.Status,
@@ -130,7 +130,7 @@ func (kc *KafkaConsumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim
 		case "update":
 			log.Printf("Updating job with ID: %d\n", incoming.JobId)
 			err := kc.jobService.UpdateJob(domain.Job{
-				ID:          incoming.JobId,
+				JobID:          incoming.JobId,
 				Title:       incoming.Title,
 				Description: incoming.Description,
 				Status:      incoming.Status,

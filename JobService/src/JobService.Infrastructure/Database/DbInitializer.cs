@@ -8,7 +8,7 @@ namespace JobService.Infrastructure.Database
         public static void Initialize(IDbConnection connection)
         {
             var tableCheck = @"CREATE TABLE IF NOT EXISTS Jobs (
-                                Id INT AUTO_INCREMENT PRIMARY KEY,
+                                JobId CHAR(36) PRIMARY NOT NULL KEY DEFAULT UUID(),
                                 Title VARCHAR(255) NOT NULL,
                                 Description TEXT NOT NULL,
                                 Status VARCHAR(50) NOT NULL,

@@ -1,17 +1,21 @@
-# Base image for gRPC service
+# Base image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 8080
 
-# Build image for compiling .NET gRPC service
+# Build image
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY . .
-WORKDIR /src/AdminGrpcService
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app
 
-# Final runtime image
+COPY . .
+
+# Go to correct subdirectory
+WORKDIR /src/AdminService/src/AdminGrpcService
+
+RUN dotnet restore AdminGrpcService.csproj
+RUN dotnet publish AdminGrpcService.csproj -c Release -o /app
+
+# Final image
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app .

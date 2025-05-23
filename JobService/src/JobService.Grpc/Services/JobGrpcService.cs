@@ -30,7 +30,7 @@ public class JobGrpcService : JobAdmin.JobAdminBase
     {
         var message = new
         {
-            JobId = job.Id,
+            JobId = job.JobId,
             Title = job.Title,
             Description = job.Description,
             Status = job.Status,
@@ -42,9 +42,9 @@ public class JobGrpcService : JobAdmin.JobAdminBase
         var serializedMessage = JsonSerializer.Serialize(message);
         _logger.LogInformation("Sending Kafka message: {Message}", serializedMessage);
 
-        await _kafkaProducer.SendMessageAsync(job.Id.ToString(), message);
+        await _kafkaProducer.SendMessageAsync(job.JobId, message);
 
-        _logger.LogInformation("Kafka message sent successfully for JobId: {JobId}, Action: {Action}", job.Id, action);
+        _logger.LogInformation("Kafka message sent successfully for JobId: {JobId}, Action: {Action}", job.JobId, action);
     }
 
     private NotifyJobResponse ValidateRequest(NotifyJobRequest request)
@@ -69,24 +69,41 @@ public class JobGrpcService : JobAdmin.JobAdminBase
     {
         _logger.LogInformation("Processing 'Create' action for JobId: {JobId}", request.JobId);
 
-        var createdAt = request.CreatedAt?.ToDateTime() ?? DateTime.UtcNow;
+        var job = _jobRepository.GetById(request.JobId);
+        if (job == null){
 
-        var job = new Job
-        {
-            Id = request.JobId,
-            Title = request.Title,
-            Description = request.Description,
-            Status = request.Status,
-            OwnerId = request.OwnerId,
-            CreatedAt = createdAt
-        };
+            var createdAt = request.CreatedAt?.ToDateTime() ?? DateTime.UtcNow;
 
-        _jobRepository.InsertJob(job);
-        _logger.LogInformation("Job created successfully: {Job}", JsonSerializer.Serialize(job));
+            job = new Job
+            {
+                JobId = request.JobId,
+                Title = request.Title,
+                Description = request.Description,
+                Status = request.Status,
+                OwnerId = request.OwnerId,
+                CreatedAt = createdAt
+            };
+
+            _jobRepository.InsertJob(job);
+
+            _logger.LogInformation("Job created successfully: {Job}", JsonSerializer.Serialize(job));
+
+        }else{
+
+            job.Title = request.Title;
+            job.Description = request.Description;
+            job.Status = request.Status;
+            _jobRepository.UpdateJob(job);
+            _logger.LogInformation("Job updated successfully: {Job}", JsonSerializer.Serialize(job));
+
+        }
+
+
+        
 
         if (job.Status == "Approved")
         {
-            _logger.LogInformation("Job approved. Sending 'Create' action to Kafka for JobId: {JobId}", job.Id);
+            _logger.LogInformation("Job approved. Sending 'Create' action to Kafka for JobId: {JobId}", job.JobId);
             await NotifyKafkaAsync(job, ActionCreate);
         }
 
@@ -120,7 +137,7 @@ public class JobGrpcService : JobAdmin.JobAdminBase
 
         if (job.Status == "Approved")
         {
-            _logger.LogInformation("Job approved. Sending 'Update' action to Kafka for JobId: {JobId}", job.Id);
+            _logger.LogInformation("Job approved. Sending 'Update' action to Kafka for JobId: {JobId}", job.JobId);
             await NotifyKafkaAsync(job, ActionUpdate);
         }
 
@@ -146,12 +163,12 @@ public class JobGrpcService : JobAdmin.JobAdminBase
             };
         }
 
-        _jobRepository.DeleteJob(job.Id);
-        _logger.LogInformation("Job deleted successfully for JobId: {JobId}", job.Id);
+        _jobRepository.DeleteJob(job.JobId);
+        _logger.LogInformation("Job deleted successfully for JobId: {JobId}", job.JobId);
 
         if (job.Status == "Approved")
         {
-            _logger.LogInformation("Job approved. Sending 'Delete' action to Kafka for JobId: {JobId}", job.Id);
+            _logger.LogInformation("Job approved. Sending 'Delete' action to Kafka for JobId: {JobId}", job.JobId);
             await NotifyKafkaAsync(job, ActionDelete);
         }
 

@@ -6,10 +6,10 @@ namespace JobService.Domain.Services
     public interface IJobService
     {
         Job CreateJob(Job job);
-        Job GetJobById(int id);
+        Job GetJobById(string jobId);
         IEnumerable<Job> GetAllJobs();
         IEnumerable<Job> GetJobsByStatus(string status);
         Job UpdateJob(Job updatedJob, string ownerId);
-        void DeleteJob(int id, string ownerId);
+        void DeleteJob(string jobId, string ownerId);
     }
 }

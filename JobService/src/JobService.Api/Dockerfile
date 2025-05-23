@@ -7,16 +7,14 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy only the project file and restore dependencies
-COPY JobService.Api/JobService.Api.csproj ./JobService.Api/
-RUN dotnet restore ./JobService.Api/JobService.Api.csproj
-
-# Copy the rest of the application code
 COPY . .
 
+# Go to correct subdirectory
+WORKDIR /src/JobService/src/JobService.Api
+
 # Build and publish the application
-WORKDIR /src/JobService.Api
-RUN dotnet publish -c Release -o /app
+RUN dotnet restore JobService.Api.csproj
+RUN dotnet publish JobService.Api.csproj -c Release -o /app
 
 # Final runtime image
 FROM base AS final

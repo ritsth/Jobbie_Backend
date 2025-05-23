@@ -6,10 +6,10 @@ namespace JobService.Domain.Repositories
     public interface IJobRepository
     {
         Job InsertJob(Job job);
-        Job GetById(int id);
+        Job GetById(string jobId);
         IEnumerable<Job> GetAll();
         IEnumerable<Job> GetByStatus(string status);
         Job UpdateJob(Job job);
-        void DeleteJob(int id);
+        void DeleteJob(string jobId);
     }
 }

@@ -137,7 +137,7 @@ services:
   listingservice:
     build:
       context: ./ListingService/src
-      dockerfile: ../Dockerfile
+      dockerfile: Dockerfile
     container_name: listing_service
     depends_on:
       listing_mysql:

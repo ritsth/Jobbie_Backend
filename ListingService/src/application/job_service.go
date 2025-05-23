@@ -29,7 +29,7 @@ func (s *JobService) UpdateJob(job domain.Job) error {
 	return s.repo.UpdateJob(&job)
 }
 
-func (s *JobService) DeleteJob(jobID int64) error {
+func (s *JobService) DeleteJob(jobID string) error {
 	return s.repo.DeleteJob(jobID)
 }
 
