@@ -11,7 +11,7 @@ WORKDIR /src
 COPY . .
 
 # Set correct working directory
-WORKDIR /src/AdminGrpcService
+WORKDIR /AdminService/src/AdminGrpcService
 
 # 🔧 Restore with explicit path
 RUN dotnet restore AdminGrpcService.csproj
