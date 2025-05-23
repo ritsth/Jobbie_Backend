@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: job-service-api-container
-          image: advanceduno/jobserviceapi:66
+          image: advanceduno/jobserviceapi:68
 
           imagePullPolicy: Always
           ports:
