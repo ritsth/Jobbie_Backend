@@ -6,7 +6,7 @@ on:
       - 'AdminService/**'
 
 env:
-  IMAGE_REPOSITORY: jobbie_adminservice
+  IMAGE_REPOSITORY: jobbie_adminservice_grpc
   CONTAINER_REGISTRY: jobbieregistry.azurecr.io
   DOCKERFILE_PATH: AdminService/src/AdminGrpcService/Dockerfile
   GITHUB_TOKEN: ${{ secrets.GH_PAT }}
@@ -39,3 +39,4 @@ jobs:
         run: |
           chmod +x scripts/updateK8sManifests.sh
           ./scripts/updateK8sManifests.sh AdminService ${{ env.IMAGE_REPOSITORY }} ${{ github.run_number }}
+        
