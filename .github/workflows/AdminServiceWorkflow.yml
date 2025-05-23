@@ -1,4 +1,4 @@
-name: Build and Deploy AdminGrpcService
+name: Build and Deploy AdminService
 
 on:
   push:
@@ -6,9 +6,9 @@ on:
       - 'AdminService/**'
 
 env:
-  IMAGE_REPOSITORY: jobbie_adminservice_grpc
+  IMAGE_REPOSITORY: jobbie_adminserviceapi
   CONTAINER_REGISTRY: jobbieregistry.azurecr.io
-  DOCKERFILE_PATH: AdminService/src/AdminGrpcService/Dockerfile
+  DOCKERFILE_PATH: AdminService/src/AdminService/Dockerfile
 
 jobs:
   build:
@@ -76,4 +76,4 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         run: |
             chmod +x scripts/updateK8sManifests.sh
-            ./scripts/updateK8sManifests.sh admin-grpc advanceduno/adminservicegrpc ${{ needs.build.outputs.tag }}
+            ./scripts/updateK8sManifests.sh admin-api advanceduno/adminserviceapi ${{ needs.build.outputs.tag }}

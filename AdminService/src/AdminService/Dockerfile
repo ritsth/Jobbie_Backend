@@ -7,9 +7,11 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY . .
-WORKDIR /src/AdminService
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app
+WORKDIR /src/AdminService/src/AdminService
+
+RUN dotnet restore AdminService.csproj
+RUN dotnet publish AdminService.csproj -c Release -o /app
+
 
 
 # Final runtime image
@@ -17,3 +19,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=build /app .
 ENTRYPOINT ["dotnet", "AdminService.dll"]
+
+
