@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: job-service-grpc-container
-          image: advanceduno/jobservicegrpc:68
+          image: advanceduno/jobservicegrpc:64
 
           imagePullPolicy: Always
           ports:
