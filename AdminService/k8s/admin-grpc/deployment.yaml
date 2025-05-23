@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: admin-grpc-container
-          image: advanceduno/adminservicegrpc:230
+          image: advanceduno/adminservicegrpc:231
 
           imagePullPolicy: "Always"
           ports:
