@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: admin-api-container
-          image: advanceduno/adminserviceapi:125
+          image: advanceduno/adminserviceapi:124
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
