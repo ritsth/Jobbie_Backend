@@ -34,8 +34,8 @@ jobs:
       - name: Push Docker image
         run: |
           docker push ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:${{ github.run_number }}
-        
+
       - name: Update Kubernetes Manifests
         run: |
-            chmod +x ./scripts/updatek8sManifests.sh
-            ./scripts/updatek8sManifests.sh admin-grpc advanceduno/adminservicegrpc ${{ github.run_number }}
+          chmod +x scripts/updateK8sManifests.sh
+          ./scripts/updatek8sManifests.sh admin-grpc advanceduno/adminservicegrpc ${{ github.run_number }}

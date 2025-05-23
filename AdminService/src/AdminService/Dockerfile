@@ -11,6 +11,7 @@ WORKDIR /src/AdminService
 RUN dotnet restore
 RUN dotnet publish -c Release -o /app
 
+
 # Final runtime image
 FROM base AS final
 WORKDIR /app
