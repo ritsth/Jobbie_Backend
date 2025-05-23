@@ -37,5 +37,5 @@ jobs:
         
       - name: Update Kubernetes Manifests
         run: |
-            chmod +x scripts/updatek8sManifests.sh
+            chmod +x ./scripts/updatek8sManifests.sh
             ./scripts/updatek8sManifests.sh admin-grpc advanceduno/adminservicegrpc ${{ github.run_number }}
