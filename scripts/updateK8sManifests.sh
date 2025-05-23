@@ -6,9 +6,9 @@ if [ "$#" -ne 3 ]; then
   exit 1
 fi
 
-SERVICE_FOLDER="$1"        # e.g., admin-grpc
-IMAGE_REPOSITORY="$2"      # e.g., advanceduno/adminservicegrpc
-IMAGE_TAG="$3"             # e.g., 42 or latest
+SERVICE_FOLDER="$1"
+IMAGE_REPOSITORY="$2"
+IMAGE_TAG="$3"
 
 REPO_URL="https://x-access-token:$GITHUB_TOKEN@github.com/AdvancedUno/Jobbie_Backend.git"
 
@@ -16,12 +16,15 @@ REPO_URL="https://x-access-token:$GITHUB_TOKEN@github.com/AdvancedUno/Jobbie_Bac
 git clone "$REPO_URL" /tmp/temp_repo
 cd /tmp/temp_repo
 
-DEPLOYMENT_FILE="AdminService/k8s/$SERVICE_FOLDER/deployment.yaml"
+# ✅ Configure Git user for commit
+git config user.name "GitHub Actions"
+git config user.email "actions@github.com"
 
-# Update the image tag line
+# Update the image tag in the deployment YAML
+DEPLOYMENT_FILE="AdminService/k8s/$SERVICE_FOLDER/deployment.yaml"
 sed -i "s|image: .*|image: $IMAGE_REPOSITORY:$IMAGE_TAG|g" "$DEPLOYMENT_FILE"
 
-# Git commit and push
+# Commit and push
 git add "$DEPLOYMENT_FILE"
 git commit -m "Update image for $SERVICE_FOLDER to $IMAGE_REPOSITORY:$IMAGE_TAG"
 git push
