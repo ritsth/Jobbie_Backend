@@ -12,6 +12,7 @@ env:
 
 jobs:
   build:
+    name: Build Docker Image
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.set-tag.outputs.tag }}
@@ -40,6 +41,7 @@ jobs:
           path: image.tar
 
   push:
+    name: Push to ACR
     runs-on: ubuntu-latest
     needs: build
 
@@ -64,8 +66,9 @@ jobs:
           docker push ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:${{ needs.build.outputs.tag }}
 
   update-manifest:
+    name: Update Kubernetes Manifest
     runs-on: ubuntu-latest
-    needs: push
+    needs: [push, build]
 
     steps:
       - name: Checkout code
