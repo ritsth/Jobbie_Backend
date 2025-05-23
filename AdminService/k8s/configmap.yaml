@@ -3,5 +3,6 @@ kind: ConfigMap
 metadata:
   name: admin-service-config
   namespace: jobbie-backend
+  
 data:
   ConnectionStrings__MySqlConnection: "Server=mysql-adminservice-headless;Database=admindb;User=user;Password=password;"

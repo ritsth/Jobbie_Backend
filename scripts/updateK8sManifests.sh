@@ -1,29 +1,30 @@
 #!/bin/bash
+set -euo pipefail
 
-set -x
+if [ "$#" -ne 3 ]; then
+  echo "Usage: $0 <service_folder> <image_repository> <tag>"
+  exit 1
+fi
 
-# Set the repository URL
+SERVICE_FOLDER="$1"        # e.g., admin-grpc
+IMAGE_REPOSITORY="$2"      # e.g., advanceduno/adminservicegrpc
+IMAGE_TAG="$3"             # e.g., 42 or latest
+
 REPO_URL="https://x-access-token:$GITHUB_TOKEN@github.com/AdvancedUno/Jobbie_Backend.git"
 
-
-# Clone the git repository into the /tmp directory
+# Clone repo
 git clone "$REPO_URL" /tmp/temp_repo
-
-# Navigate into the cloned repository directory
 cd /tmp/temp_repo
 
-# Make changes to the Kubernetes manifest file(s)
-# For example, let's say you want to change the image tag in a deployment.yaml file
-sed -i "s|image: jobbieregistry.azurecr.io/.*|image: jobbieregistry.azurecr.io/$2:$3|g" k8s-specifications/$1-deployment.yaml
+DEPLOYMENT_FILE="AdminService/k8s/$SERVICE_FOLDER/deployment.yaml"
 
-# Add the modified files
-git add .
+# Update the image tag line
+sed -i "s|image: .*|image: $IMAGE_REPOSITORY:$IMAGE_TAG|g" "$DEPLOYMENT_FILE"
 
-# Commit the changes
-git commit -m "Update Kubernetes manifest"
-
-# Push the changes back to the repository
+# Git commit and push
+git add "$DEPLOYMENT_FILE"
+git commit -m "Update image for $SERVICE_FOLDER to $IMAGE_REPOSITORY:$IMAGE_TAG"
 git push
 
-# Cleanup: remove the temporary directory
+# Cleanup
 rm -rf /tmp/temp_repo
