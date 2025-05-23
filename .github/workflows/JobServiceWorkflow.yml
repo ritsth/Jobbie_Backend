@@ -76,4 +76,4 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         run: |
             chmod +x scripts/updateK8sManifests.sh
-            ./scripts/updateK8sManifests.sh job-service-api advanceduno/jobserviceapi ${{ needs.build.outputs.tag }}
+            ./scripts/updateK8sManifests.sh JobService job-service-api advanceduno/jobserviceapi ${{ needs.build.outputs.tag }}

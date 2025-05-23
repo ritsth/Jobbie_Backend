@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   name: job-service-config
   namespace: jobbie-backend
+  
 data:
   ConnectionStrings__MySqlConnection: "Server=mysql-jobservice-headless;Database=jobdb;User=user;Password=password;"
   Kafka__BootstrapServers: "kafka-headless:9092"
