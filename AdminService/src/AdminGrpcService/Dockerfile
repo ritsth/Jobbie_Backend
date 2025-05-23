@@ -12,8 +12,6 @@ COPY . .
 # Go to correct subdirectory
 WORKDIR /src/AdminService/src/AdminGrpcService
 
-
-
 RUN dotnet restore AdminGrpcService.csproj
 RUN dotnet publish AdminGrpcService.csproj -c Release -o /app
 

@@ -9,15 +9,48 @@ env:
   IMAGE_REPOSITORY: jobbie_adminservice_grpc
   CONTAINER_REGISTRY: jobbieregistry.azurecr.io
   DOCKERFILE_PATH: AdminService/src/AdminGrpcService/Dockerfile
-  GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.set-tag.outputs.tag }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set image tag
+        id: set-tag
+        run: echo "tag=${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:${{ github.run_number }} \
+            -f ${{ env.DOCKERFILE_PATH }} .
+
+      - name: Save Docker image to tarball
+        run: |
+          docker save ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:${{ github.run_number }} -o image.tar
+
+      - name: Upload built image
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-image
+          path: image.tar
+
+  push:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download built image
+        uses: actions/download-artifact@v4
+        with:
+          name: built-image
+
+      - name: Load Docker image
+        run: docker load -i image.tar
 
       - name: Log in to Azure Container Registry
         uses: azure/docker-login@v1
@@ -26,16 +59,21 @@ jobs:
           username: ${{ secrets.AZURE_ACR_USERNAME }}
           password: ${{ secrets.AZURE_ACR_PASSWORD }}
 
-      - name: Build Docker image
-        run: |
-          docker build -t ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:${{ github.run_number }} \
-            -f ${{ env.DOCKERFILE_PATH }} .
-
       - name: Push Docker image
         run: |
-          docker push ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:${{ github.run_number }}
+          docker push ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:${{ needs.build.outputs.tag }}
 
-      - name: Update Kubernetes Manifests
+  update-manifest:
+    runs-on: ubuntu-latest
+    needs: push
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update Kubernetes Manifest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           chmod +x scripts/updateK8sManifests.sh
-          ./scripts/updateK8sManifests.sh admin-grpc advanceduno/adminservicegrpc ${{ github.run_number }}
+          ./scripts/updateK8sManifests.sh admin-grpc advanceduno/adminservicegrpc ${{ needs.build.outputs.tag }}
