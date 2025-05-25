@@ -1,0 +1,6 @@
+resources:
+  - ingress.yaml
+  - namespace.yaml
+  - kafka-statefulset.yaml
+  - service.yaml
+  - zookeeper-statefulset.yaml
