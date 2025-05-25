@@ -1,0 +1,5 @@
+resources:
+  - ../../AdminService/k8s  
+  - ../../k8s
+  - ../../JobService/k8s  
+  - ../../ListingService/k8s  
