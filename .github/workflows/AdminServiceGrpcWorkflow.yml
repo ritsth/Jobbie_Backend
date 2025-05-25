@@ -3,7 +3,7 @@ name: Build and Deploy AdminGrpcService
 on:
   push:
     paths:
-      - 'AdminService/**'
+      - 'AdminService/src/AdminGrpcService/**'
 
 env:
   IMAGE_REPOSITORY: jobbie_adminservice_grpc
