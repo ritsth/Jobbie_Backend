@@ -3,7 +3,7 @@ name: Build and Deploy AdminService
 on:
   push:
     paths:
-      - 'AdminService/**'
+      - 'AdminService/src/AdminService/**'
 
 env:
   IMAGE_REPOSITORY: jobbie_adminserviceapi
