@@ -3,7 +3,7 @@ name: Build and Deploy JobServiceGrpc
 on:
   push:
     paths:
-      - 'JobService/src/JobService.Api/**'
+      - 'JobService/src/JobService.Grpc/**'
 
 env:
   IMAGE_REPOSITORY: jobbie_jobservicegrpc
