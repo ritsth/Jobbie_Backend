@@ -26,5 +26,5 @@ spec:
                 name: admin-service-config
             - secretRef:
                 name: admin-service-secret
-       imagePullSecrets:
-         -name: acr-secret
+      imagePullSecrets:
+        - name: acr-secret
