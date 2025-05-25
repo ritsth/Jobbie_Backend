@@ -7,10 +7,5 @@ resources:
   - job-service-api/service.yaml
   - job-service-grpc/deployment.yaml
   - job-service-grpc/service.yaml
-  - job-service-grpc/configmap.yaml
-  - job-service-grpc/secret.yaml
-  - kafka/kafka-statefulset.yaml
-  - kafka/zookeeper-statefulset.yaml
-  - kafka/service.yaml
   - configmap.yaml
-  - secret/yaml
+  - secret.yaml
