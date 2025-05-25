@@ -1,0 +1,11 @@
+resources:
+  - admin-api/deployment.yaml
+  - admin-api/service.yaml
+  - admin-grpc/deployment.yaml
+  - admin-grpc/service.yaml
+  - database/mysql-storage.yaml
+  - database/secret.yaml
+  - database/service.yaml
+  - database/statefulset.yaml
+  - configmap.yaml
+  - secret.yaml
