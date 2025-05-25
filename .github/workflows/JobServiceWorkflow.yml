@@ -3,7 +3,7 @@ name: Build and Deploy JobService
 on:
   push:
     paths:
-      - 'JobService/**'
+      - 'JobService/src/JobService.Api/**'
 
 env:
   IMAGE_REPOSITORY: jobbie_jobserviceapi
