@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: admin-grpc-container
-          image: jobbieregistry/jobbie_adminservice_grpc:245
+          image: jobbieregistry.azurecr.io/jobbie_adminservice_grpc:245
 
           imagePullPolicy: "Always"
           ports:
