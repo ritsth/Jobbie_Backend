@@ -10,6 +10,11 @@ env:
   CONTAINER_REGISTRY: jobbieregistry.azurecr.io
   DOCKERFILE_PATH: JobService/src/JobService.Api/Dockerfile
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -76,4 +81,4 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         run: |
             chmod +x scripts/updateK8sManifests.sh
-            ./scripts/updateK8sManifests.sh JobService job-service-api advanceduno/jobserviceapi ${{ needs.build.outputs.tag }}
+            ./scripts/updateK8sManifests.sh JobService job-service-api jobbieregistry.azurecr.io/jobbie_jobserviceapi ${{ needs.build.outputs.tag }}
