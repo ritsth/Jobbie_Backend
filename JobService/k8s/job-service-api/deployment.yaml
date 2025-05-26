@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: job-service-api-container
-          image: advanceduno/jobserviceapi:199
+          image: jobbieregistry.azurecr.io/jobserviceapi:199
 
           imagePullPolicy: Always
           ports:
