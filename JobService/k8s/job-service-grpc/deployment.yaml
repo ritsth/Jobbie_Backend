@@ -27,6 +27,9 @@ spec:
                 name: job-service-config
             - secretRef:
                 name: job-service-secret
+
+      imagePullSecrets:
+        - name: acr-secret
           # readinessProbe:
           #   tcpSocket:
           #     port: 8080

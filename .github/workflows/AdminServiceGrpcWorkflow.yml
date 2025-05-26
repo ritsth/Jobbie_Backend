@@ -10,6 +10,11 @@ env:
   CONTAINER_REGISTRY: jobbieregistry.azurecr.io
   DOCKERFILE_PATH: AdminService/src/AdminGrpcService/Dockerfile
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
 jobs:
   build:
     name: Build Docker Image
@@ -79,4 +84,5 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         run: |
             chmod +x scripts/updateK8sManifests.sh
-            ./scripts/updateK8sManifests.sh AdminService jobbie_adminservice_grpc ${{ needs.build.outputs.tag }}
+            ./scripts/updateK8sManifests.sh AdminService jobbieregistry.azurecr.io/jobbie_adminservice_grpc ${{ needs.build.outputs.tag }}
+
