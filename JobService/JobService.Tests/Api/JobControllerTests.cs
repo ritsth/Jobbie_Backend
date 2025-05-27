@@ -1,77 +1,322 @@
-using Xunit;
-using Moq;
-using Microsoft.AspNetCore.Mvc;
-using JobService.Domain.Services;
-using JobService.Domain.Entities;
+using JobService.Api.Abstractions;
 using JobService.Api.Controllers;
+using JobService.Domain.Entities;
+using JobService.Domain.Services;
+using JobService.Grpc.Protos;
+using Google.Protobuf.WellKnownTypes;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Xunit;
 
-namespace JobService.Tests.Api
+namespace JobService.Api.Tests.Controllers
 {
     public class JobControllerTests
     {
+        private readonly Mock<IJobService> _jobServiceMock;
+        private readonly Mock<IJobAdminClient> _jobAdminClientMock;
         private readonly JobController _controller;
-        private readonly Mock<IJobService> _mockService;
 
         public JobControllerTests()
         {
-            _mockService = new Mock<IJobService>();
-            _controller = new JobController(_mockService.Object);
+            //create mocks for the dependencies
+            _jobServiceMock = new Mock<IJobService>();
+            _jobAdminClientMock = new Mock<IJobAdminClient>();
+            _controller = new JobController(_jobServiceMock.Object, _jobAdminClientMock.Object);
         }
 
+        #region PostJob Tests
+
         [Fact]
-        public void GetAllJobs_ShouldReturnOkWithJobs()
+        public async Task JobControllerTests_PostJob_ReturnCreatedAtActionWithJob()
         {
             // Arrange
-            var mockJobs = new List<Job>()
+            var job = new Job
             {
-                new Job { Id = 1, Title = "Test1" },
-                new Job { Id = 2, Title = "Test2" }
+                JobId = "job1",
+                Title = "Test Job",
+                Description = "Test Description",
+                Status = "Pending",
+                OwnerId = "owner1",
+                CreatedAt = DateTime.UtcNow
             };
-            _mockService.Setup(s => s.GetAllJobs()).Returns(mockJobs);
 
+            // (Simulate) Define how the mock should respond when specific methods are 
+            // called during a test, without relying on the actual implementation
+            _jobServiceMock.Setup(s => s.CreateJob(It.IsAny<Job>())).Returns(job);
+
+            _jobAdminClientMock.Setup(c => c.NotifyJobAsync(It.IsAny<NotifyJobRequest>()))
+                .ReturnsAsync(new NotifyJobResponse { Success = true });
+ 
             // Act
-            var result = _controller.GetAllJobs() as OkObjectResult;
+            var result = await _controller.PostJob(job);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(200, result.StatusCode);
-            var returnedJobs = Assert.IsType<List<Job>>(result.Value);
-            Assert.Equal(2, returnedJobs.Count);
+            var createdResult = Assert.IsType<CreatedAtActionResult>(result);
+            Assert.Equal(job, createdResult.Value);
         }
 
         [Fact]
-        public void GetJobById_JobNotFound_ShouldReturnNotFound()
+        public async Task JobControllerTests_PostJob_ReturnBadRequest()
+        {
+            // Act
+            var result = await _controller.PostJob(null);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task JobControllerTests_PostJob_ReturnProblemWithFailedGrpc()
         {
             // Arrange
-            _mockService.Setup(s => s.GetJobById(99)).Returns((Job)null);
+            var job = new Job
+            {
+                JobId = "job1",
+                Title = "Test Job",
+                Description = "Test Description",
+                Status = "Pending",
+                OwnerId = "owner1",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _jobServiceMock.Setup(s => s.CreateJob(It.IsAny<Job>())).Returns(job);
+            _jobAdminClientMock.Setup(c => c.NotifyJobAsync(It.IsAny<NotifyJobRequest>()))
+                .ReturnsAsync(new NotifyJobResponse { Success = false, Message = "gRPC error" });
 
             // Act
-            var result = _controller.GetJobById(99);
+            var result = await _controller.PostJob(job);
+
+            // Assert
+            var problemResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(500, problemResult.StatusCode);
+        }
+
+        #endregion
+
+        #region GetJobById Tests
+
+        [Fact]
+        public void JobControllerTests_GetJobById_ReturnOkWithJob()
+        {
+            // Arrange
+            var jobId = "job1";
+            var job = new Job
+            {
+                JobId = jobId,
+                Title = "Test Job",
+                Description = "Test Description",
+                Status = "Pending",
+                OwnerId = "owner1",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _jobServiceMock.Setup(s => s.GetJobById(jobId)).Returns(job);
+
+            // Act
+            var result = _controller.GetJobById(jobId);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedJob = Assert.IsType<Job>(okResult.Value);
+            Assert.Equal(jobId, returnedJob.JobId);
+        }
+
+        [Fact]
+        public void JobControllerTests_GetJobById_ReturnNotFound()
+        {
+            // Arrange
+            var jobId = "nonexistent";
+            _jobServiceMock.Setup(s => s.GetJobById(jobId)).Returns((Job)null);
+
+            // Act
+            var result = _controller.GetJobById(jobId);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        #endregion
+
+        #region GetAllJobs Tests
+
+        [Fact]
+        public void JobControllerTests_GetAllJobs_ReturnOkWithJobs()
+        {
+            // Arrange
+            var jobs = new List<Job>
+            {
+                new Job { JobId = "job1", Title = "Job 1", Description = "Desc 1", Status = "Pending", OwnerId = "owner1", CreatedAt = DateTime.UtcNow },
+                new Job { JobId = "job2", Title = "Job 2", Description = "Desc 2", Status = "Approved", OwnerId = "owner2", CreatedAt = DateTime.UtcNow }
+            };
+
+            _jobServiceMock.Setup(s => s.GetAllJobs()).Returns(jobs);
+
+            // Act
+            var result = _controller.GetAllJobs();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedJobs = Assert.IsType<List<Job>>(okResult.Value);
+        }
+
+        #endregion
+
+        #region GetJobsByStatus Tests
+
+        [Fact]
+        public void JobControllerTests_GetJobsByStatus_ReturnOkWithJob()
+        {
+            // Arrange
+            var status = "Pending";
+            var jobs = new List<Job>
+            {
+                new Job { JobId = "job1", Title = "Job 1", Description = "Desc 1", Status = status, OwnerId = "owner1", CreatedAt = DateTime.UtcNow }
+            };
+
+            _jobServiceMock.Setup(s => s.GetJobsByStatus(status)).Returns(jobs);
+
+            // Act
+            var result = _controller.GetJobsByStatus(status);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedJobs = Assert.IsType<List<Job>>(okResult.Value);
+            Assert.Equal(status, returnedJobs[0].Status);
+        }
+
+        #endregion
+
+        #region UpdateJob Tests
+
+        [Fact]
+        public async Task JobControllerTests_UpdateJob_ReturnOkWithJob()
+        {
+            // Arrange
+            var jobId = "job1";
+            var ownerId = "owner1";
+            var jobToUpdate = new Job
+            {
+                JobId = jobId,
+                Title = "Updated Job",
+                Description = "Updated Description",
+                Status = "Approved",
+                OwnerId = ownerId,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _jobServiceMock.Setup(s => s.UpdateJob(It.IsAny<Job>(), ownerId)).Returns(jobToUpdate);
+
+            _jobAdminClientMock.Setup(c => c.NotifyJobAsync(It.IsAny<NotifyJobRequest>()))
+                .ReturnsAsync(new NotifyJobResponse { Success = true });
+
+            // Act
+            var result = await _controller.UpdateJob(jobId, jobToUpdate, ownerId);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedJob = Assert.IsType<Job>(okResult.Value);
+            Assert.Equal(jobId, returnedJob.JobId);
+        }
+
+        [Fact]
+        public async Task JobControllerTests_UpdateJob_ReturnNotFound()
+        {
+            // Arrange
+            var jobId = "nonexistent";
+            var ownerId = "owner1";
+            var jobToUpdate = new Job
+            {
+                JobId = jobId,
+                Title = "Updated Job",
+                Description = "Updated Description",
+                Status = "Approved",
+                OwnerId = ownerId,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _jobServiceMock.Setup(s => s.UpdateJob(It.IsAny<Job>(), ownerId)).Returns((Job)null);
+
+            // Act
+            var result = await _controller.UpdateJob(jobId, jobToUpdate, ownerId);
 
             // Assert
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public void PostJob_ShouldReturnCreatedAtAction()
+        public async Task JobControllerTests_UpdateJob_ReturnProblemWithFailedGrpc()
         {
             // Arrange
-            var newJob = new Job { Title = "ControllerTest", OwnerId = "owner123" };
-            var createdJob = new Job { Id = 10, Title = "ControllerTest", OwnerId = "owner123", Status = "Pending" };
+            var jobId = "job1";
+            var ownerId = "owner1";
+            var jobToUpdate = new Job
+            {
+                JobId = jobId,
+                Title = "Updated Job",
+                Description = "Updated Description",
+                Status = "Approved",
+                OwnerId = ownerId,
+                CreatedAt = DateTime.UtcNow
+            };
 
-            _mockService.Setup(s => s.CreateJob(It.IsAny<Job>())).Returns(createdJob);
+            _jobServiceMock.Setup(s => s.UpdateJob(It.IsAny<Job>(), ownerId)).Returns(jobToUpdate);
+
+            _jobAdminClientMock.Setup(c => c.NotifyJobAsync(It.IsAny<NotifyJobRequest>()))
+                .ReturnsAsync(new NotifyJobResponse { Success = false, Message = "gRPC error" });
 
             // Act
-            var actionResult = _controller.PostJob(newJob) as CreatedAtActionResult;
+            var result = await _controller.UpdateJob(jobId, jobToUpdate, ownerId);
 
             // Assert
-            Assert.NotNull(actionResult);
-            Assert.Equal("GetJobById", actionResult.ActionName);
-            Assert.Equal(10, actionResult.RouteValues["id"]);
-            var jobValue = actionResult.Value as Job;
-            Assert.Equal("ControllerTest", jobValue.Title);
-            Assert.Equal("Pending", jobValue.Status);
+            var problemResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(500, problemResult.StatusCode);
         }
+
+        #endregion
+
+        #region DeleteJob Tests
+
+        [Fact]
+        public async Task JobControllerTests_DeleteJob_ReturnNoContent()
+        {
+            // Arrange
+            var jobId = "job1";
+            var ownerId = "owner1";
+
+            _jobServiceMock.Setup(s => s.DeleteJob(jobId, ownerId));
+
+            _jobAdminClientMock.Setup(c => c.NotifyJobAsync(It.IsAny<NotifyJobRequest>()))
+                .ReturnsAsync(new NotifyJobResponse { Success = true });
+
+            // Act
+            var result = await _controller.DeleteJob(jobId, ownerId);
+
+            // Assert
+            Assert.IsType<NoContentResult>(result);
+        }
+
+        [Fact]
+        public async Task JobControllerTests_DeleteJob_ReturnProblemWithFailedGrpc()
+        {
+            // Arrange
+            var jobId = "job1";
+            var ownerId = "owner1";
+
+            _jobServiceMock.Setup(s => s.DeleteJob(jobId, ownerId));
+            _jobAdminClientMock.Setup(c => c.NotifyJobAsync(It.IsAny<NotifyJobRequest>()))
+                .ReturnsAsync(new NotifyJobResponse { Success = false, Message = "gRPC error" });
+
+            // Act
+            var result = await _controller.DeleteJob(jobId, ownerId);
+
+            // Assert
+            var problemResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(500, problemResult.StatusCode);
+        }
+
+        #endregion
     }
 }

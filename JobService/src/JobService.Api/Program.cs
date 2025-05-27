@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using JobService.Grpc.Protos;
+using JobService.Api.Abstractions;
+using JobService.Api.Adapters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +48,8 @@ builder.Services.AddGrpcClient<JobAdmin.JobAdminClient>(o =>
     // If you expose 5001:8080 externally, you can use http://localhost:5001 for local dev.
     o.Address = new Uri("http://admin-grpc:8080");
 });
+
+builder.Services.AddScoped<IJobAdminClient, JobAdminClientAdapter>();
 
 // Add controllers
 builder.Services.AddControllers();

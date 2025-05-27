@@ -4,6 +4,7 @@ using JobService.Domain.Entities;
 using JobService.Grpc.Protos; 
 using Google.Protobuf.WellKnownTypes; 
 using System.Threading.Tasks;
+using JobService.Api.Abstractions;
 
 namespace JobService.Api.Controllers
 {
@@ -13,14 +14,13 @@ namespace JobService.Api.Controllers
     {
         private readonly IJobService _jobService;
 
-        private readonly JobAdmin.JobAdminClient _jobAdminClient;
+        private readonly IJobAdminClient _jobAdminClient; // Use interface
 
-        public JobController(IJobService jobService, JobAdmin.JobAdminClient jobAdminClient)
+        public JobController(IJobService jobService, IJobAdminClient jobAdminClient)
         {
             _jobService = jobService;
-            _jobAdminClient = jobAdminClient; // <-- store injected gRPC client
+            _jobAdminClient = jobAdminClient;
         }
-
         // POST: api/Job
         [HttpPost]
         // CHANGED: use async for gRPC call
