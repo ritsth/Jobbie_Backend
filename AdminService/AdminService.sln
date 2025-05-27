@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9C18A514-500
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminGrpcService", "src\AdminGrpcService\AdminGrpcService.csproj", "{AD37A6A0-5577-402B-8BB5-DF4E82F58462}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminGrpcService.Tests", "AdminGrpcService.Tests\AdminGrpcService.Tests.csproj", "{4850C392-8B86-4BEF-9F0A-C26932A6FD9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminApiService.Tests", "AdminApiService.Tests\AdminApiService.Tests.csproj", "{0C8EBAA8-BDB3-494D-8124-A67B8B73381B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +32,14 @@ Global
 		{AD37A6A0-5577-402B-8BB5-DF4E82F58462}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD37A6A0-5577-402B-8BB5-DF4E82F58462}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD37A6A0-5577-402B-8BB5-DF4E82F58462}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4850C392-8B86-4BEF-9F0A-C26932A6FD9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4850C392-8B86-4BEF-9F0A-C26932A6FD9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4850C392-8B86-4BEF-9F0A-C26932A6FD9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4850C392-8B86-4BEF-9F0A-C26932A6FD9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C8EBAA8-BDB3-494D-8124-A67B8B73381B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C8EBAA8-BDB3-494D-8124-A67B8B73381B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C8EBAA8-BDB3-494D-8124-A67B8B73381B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C8EBAA8-BDB3-494D-8124-A67B8B73381B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BF3F7F4F-1B0D-4EFB-A27D-41DED8AB4753} = {C46BDAE3-3A3D-4A02-A76A-CF7858D1A1B5}

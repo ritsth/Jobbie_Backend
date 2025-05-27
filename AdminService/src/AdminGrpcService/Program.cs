@@ -16,12 +16,12 @@ builder.Configuration
 
 
 //Database connection string mySQL
-string connectionString = builder.Configuration.GetConnectionString("MySqlConnection") 
+string connectionString = builder.Configuration.GetConnectionString("MySqlConnection")
                           ?? "Server=admin_mysql_db;Database=AdminJobDB;User=Admin;Password=Admin;";
 
 // Dependency injection: Register AdminJobRepository with the connection string
-builder.Services.AddScoped<IAdminJobRepository>(serviceProvider => 
-    new AdminJobRepository(connectionString));;
+builder.Services.AddScoped<IAdminJobRepository>(serviceProvider =>
+    new AdminJobRepository(connectionString)); ;
 
 // Add services to the container.
 builder.Services.AddGrpc();
@@ -34,7 +34,7 @@ builder.Logging.AddDebug();
 //Single dependency injection for the JobAdminClient
 builder.Services.AddSingleton<JobAdmin.JobAdminClient>(sp =>
 {
-    var channel = GrpcChannel.ForAddress("http://localhost:5001"); 
+    var channel = GrpcChannel.ForAddress("http://localhost:5001");
     return new JobAdmin.JobAdminClient(channel);
 });
 

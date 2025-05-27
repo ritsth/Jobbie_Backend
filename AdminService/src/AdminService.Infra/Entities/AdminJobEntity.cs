@@ -11,7 +11,7 @@ namespace AdminService.Infra.Entities
         [StringLength(100, MinimumLength = 1, ErrorMessage = "Title must be between 1 and 100 characters.")]
         public string Title { get; set; } = default!;
         public string Description { get; set; } = default!;
-        
+
         public string Status { get; set; } = "Pending"; // Possible statuses: Pending, Approved, Denied, Deleted
 
         [Required]

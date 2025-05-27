@@ -7,7 +7,7 @@ using Google.Protobuf.WellKnownTypes;
 
 namespace AdminService.Clients
 {
-    public class AdminJobClient
+    public class AdminJobClient:IAdminJobClient
     {
         private readonly JobAdmin.JobAdminClient _client;
 

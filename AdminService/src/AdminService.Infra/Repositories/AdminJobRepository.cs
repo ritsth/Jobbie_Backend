@@ -25,7 +25,7 @@ namespace AdminService.Infra.Repositories
             // job.Id = Guid.NewGuid().ToString();
             // job.OwnerId = "Admin";
             connection.ExecuteScalar<int>(sql, job);
-            
+
             return job;
         }
 
@@ -67,7 +67,7 @@ namespace AdminService.Infra.Repositories
             return job;
         }
 
-        public void DeleteJob(string  jobId)
+        public void DeleteJob(string jobId)
         {
             using var connection = MySqlDapperConfig.CreateConnection(_connectionString);
             string sql = "DELETE FROM Jobs WHERE JobId = @JobId";

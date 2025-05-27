@@ -12,9 +12,9 @@ namespace AdminService.Controllers
     public class AdminJobController : ControllerBase
     {
         private readonly IAdminJobRepository _adminJobRepository;
-        private readonly AdminJobClient _adminJobClient;
+        private readonly IAdminJobClient _adminJobClient;
 
-        public AdminJobController(IAdminJobRepository adminJobRepository, AdminJobClient adminJobClient)
+        public AdminJobController(IAdminJobRepository adminJobRepository, IAdminJobClient adminJobClient)
         {
             _adminJobRepository = adminJobRepository;
             _adminJobClient = adminJobClient;
@@ -71,7 +71,7 @@ namespace AdminService.Controllers
                 Action = "create"
             };
 
-            
+
 
             try
             {
@@ -80,7 +80,7 @@ namespace AdminService.Controllers
                     return BadRequest("Job data is null.");
                 }
 
-                
+
                 var createdJob = _adminJobRepository.InsertJob(job);
                 _adminJobClient.CreateJobAsync(request);
                 return CreatedAtAction(nameof(GetJobById), new { jobId = createdJob.JobId }, createdJob);
@@ -114,12 +114,12 @@ namespace AdminService.Controllers
                 {
                     return BadRequest("Job data is invalid.");
                 }
-                
+
                 var updatedJob = _adminJobRepository.UpdateJob(job);
                 _adminJobClient.UpdateJobAsync(request);
                 return Ok(updatedJob);
 
-                
+
             }
             catch (Exception ex)
             {
@@ -131,7 +131,7 @@ namespace AdminService.Controllers
         [HttpDelete("{jobId}")]
         public IActionResult DeleteJob(string jobId)
         {
-            
+
 
             try
             {
@@ -164,6 +164,6 @@ namespace AdminService.Controllers
             }
         }
 
-        
+
     }
 }

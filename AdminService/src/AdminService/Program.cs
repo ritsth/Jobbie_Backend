@@ -18,11 +18,11 @@ builder.Services.AddSwaggerGen();
 
 
 // Read connection string from appsettings.json or environment variable
-string connectionString = builder.Configuration.GetConnectionString("MySqlConnection") 
+string connectionString = builder.Configuration.GetConnectionString("MySqlConnection")
                           ?? "Server=admin_mysql_db;Database=AdminJobDB;User=Admin;Password=Admin;";
 
 // Dependency injection: Register AdminJobRepository with the connection string
-builder.Services.AddScoped<IAdminJobRepository>(serviceProvider => 
+builder.Services.AddScoped<IAdminJobRepository>(serviceProvider =>
     new AdminJobRepository(connectionString));
 
 
@@ -31,7 +31,7 @@ builder.Services.AddScoped<IAdminJobRepository>(serviceProvider =>
 //Single dependency injection for the JobAdminClient
 builder.Services.AddSingleton<JobAdmin.JobAdminClient>(sp =>
 {
-    var channel = GrpcChannel.ForAddress("http://job-service-grpc:8080"); 
+    var channel = GrpcChannel.ForAddress("http://job-service-grpc:8080");
     return new JobAdmin.JobAdminClient(channel);
 });
 
@@ -43,6 +43,7 @@ builder.Services.AddTransient<AdminJobClient>(sp =>
 });
 
 
+builder.Services.AddTransient<IAdminJobClient, AdminJobClient>();
 
 //Frontend cors policy config
 builder.Services.AddCors(options =>
@@ -54,7 +55,7 @@ builder.Services.AddCors(options =>
             policy.WithOrigins("http://localhost:3000")
                   .AllowAnyMethod()    // GET, POST, PUT, DELETE etc.
                   .AllowAnyHeader();   // e.g. Content-Type, Authorization
-            
+
             // If you need credentials or cookies:
             // .AllowCredentials();
         });
