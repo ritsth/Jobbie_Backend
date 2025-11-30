@@ -1,83 +1,240 @@
+# Jobbie Backend
 
-# 🛠️ Jobbie Backend Deployment Instructions
+The **Jobbie Backend** powers the Jobbie job-posting platform using a microservice-oriented architecture.  
+It handles authentication, job posting, notifications, and data persistence for the platform.
 
-Follow these steps **carefully** to build and deploy the Jobbie backend. ⚠️ **Do not commit or push any changes** made during this process.
-
----
-
-## 📁 Step 1: Update Repository Name
-
-Edit the following file based on your OS:
-
-- **Windows**: `scripts/build_and_push.ps1`
-- **Mac/Linux**: `scripts/build_and_push.sh`
-
-Replace every instance of: advanceduno
-
-
-with **your own Docker repository name** (e.g., `yourdockerusername`).
+This repository contains the backend services responsible for core business logic and API endpoints consumed by the Jobbie Frontend.
 
 ---
 
-## 🔧 Step 2: Build and Push Docker Images
+## 📌 1. Overview
 
-Run the script:
+The backend provides:
 
-- **Windows**:
-  ```powershell
-  ./scripts/build_and_push.ps1
-Mac/Linux:
+- Authentication and authorization  
+- CRUD operations for job postings  
+- Notification dispatching  
+- Clean service separation  
+- Database-backed persistence  
+- REST API endpoints for frontend consumption  
 
-  ```shell
-./scripts/build_and_push.sh
- ```
+Designed for scalability, portability, and cloud deployment (Docker/Kubernetes).
 
-If you encounter a Dockerfile error, locate the line:
+---
 
-```code
-RUN dotnet publish AdminService.csproj -c Release -o /app
+## 🏗️ 2. Architecture
+
+The Jobbie Backend consists of several microservices (adjust based on your final implementation):
+
+- 🔐 **Auth Service** (Python/Django or Node.js)  
+- 💼 **Job Posting Service** (C# ASP.NET Core)  
+- 🔔 **Notification Service** (C# or Go)  
+- 📋 **Listing Service** (Go or C#)  
+- 🗄️ **Database Layer** (PostgreSQL recommended)  
+
+Communication between services is REST (frontend) and internal REST/gRPC depending on configuration.
+
+---
+
+## ⚙️ 3. Tech Stack
+
+| Service Type        | Technology                          |
+|---------------------|--------------------------------------|
+| Auth Service        | Python (Django REST) or Node.js      |
+| Job Service         | C# ASP.NET Core                      |
+| Notification        | C# or Go                             |
+| API Gateway / Proxy | Nginx / Kubernetes Ingress           |
+| Databases           | PostgreSQL / MongoDB                 |
+| Containerization    | Docker                               |
+| Orchestration       | Kubernetes (AKS, EKS, or Minikube)   |
+
+---
+
+## 📁 4. Project Structure
+
+This is a general example layout; update according to your exact repo:
+
 ```
-and update it to:
+Jobbie_Backend/
+├── auth-service/          # Authentication microservice
+├── job-service/           # Job posting & job details service
+├── notification-service/  # User notification service
+├── listing-service/       # Listing/searching logic
+├── docker/                # Docker and Docker Compose files
+├── k8s/                   # Kubernetes manifests (if applicable)
+├── scripts/               # Deployment/utility scripts
+└── README.md
+```
+
+---
+
+## 🚀 5. Getting Started
+
+### ✔️ Prerequisites
+
+- Docker installed  
+- .NET SDK (if using C# services)  
+- Python 3.x (if using Django services)  
+- Go (if using Go-based services)  
+- PostgreSQL running locally or in a container  
+
+---
+
+## 📥 6. Clone & Install
+
+```bash
+git clone https://github.com/ritsth/Jobbie_Backend.git
+cd Jobbie_Backend
+```
+
+Install each microservice’s dependencies by navigating into its folder:
+
+#### Example for C# service:
+
+```bash
+cd job-service
+dotnet restore
+```
+
+#### Example for Django service:
+
+```bash
+cd auth-service
+pip install -r requirements.txt
+```
+
+---
+
+## 🔐 7. Environment Variables
+
+Each service should have its own `.env` file.
+
+### Example `.env` (Auth Service)
+
+```env
+DB_URL=postgresql://username:password@localhost:5432/jobbiedb
+JWT_SECRET=your-secret-key
+```
+
+### Example `.env` (Job Service)
+
+```env
+CONNECTION_STRING=Server=localhost;Port=5432;Database=jobdb;User Id=postgres;Password=password;
+```
+
+---
+
+## ▶️ 8. Running Services
+
+### Option 1: Run Locally
+
+Run each microservice individually:
+
+**C# ASP.NET Service**
+```bash
+cd job-service
+dotnet run
+```
+
+**Python Service**
+```bash
+cd auth-service
+python manage.py runserver
+```
+
+### Option 2: Run with Docker Compose
+
+If you have a `docker-compose.yml`:
+
+```bash
+docker compose up --build
+```
+
+### Option 3: Run with Kubernetes (recommended for microservices)
+
+```bash
+kubectl apply -f k8s/
+```
+
+---
+
+## 🌐 9. API Endpoints
+
+### Auth Service
 
 ```
-RUN dotnet publish /src/AdminService/src/AdminService/AdminService.csproj -c Release -o /app
-This fixes the project path.
+POST /auth/login
+POST /auth/register
+GET  /auth/me
 ```
 
-🚫 Do NOT commit or push this Dockerfile change.
-
-🧾 Step 3: Update Kubernetes Deployment Files
-Go to each service's deployment.yaml file (inside the k8s/ folder) and update the image reference.
-
-Change this:
+### Job Service
 
 ```
-image: jobbieregistry.azurecr.io/jobbie_adminservice_grpc:245
+GET    /jobs
+GET    /jobs/{id}
+POST   /jobs
+PUT    /jobs/{id}
+DELETE /jobs/{id}
 ```
-To this:
 
-```
-image: yourdockerusername/jobbie_adminservice_grpc:latest
-```
-Replace yourdockerusername with your Docker Hub or container registry name, and update the tag if needed.
-
-🚫 Do NOT commit or push these changes.
-
-🚀 Step 4: Deploy to Kubernetes
-Run the deployment script:
+### Notification Service
 
 ```
-./scripts/deploy.ps1
+POST /notify
 ```
-✅ Make sure Docker Desktop is running before executing the script.
 
-⚠️ Final Reminder
-DO NOT COMMIT OR PUSH:
+---
 
-Any Dockerfile changes
+## 🧪 10. Testing
 
-Any updated Kubernetes deployment.yaml files
+Run tests in each microservice folder.
 
-Your modified build script with your repo name
+**For C# services:**
+```bash
+dotnet test
+```
 
-Use git add carefully and exclude all temporary changes above.
+**For Python services:**
+```bash
+python manage.py test
+```
+
+---
+
+## 🐳 11. Docker Support
+
+### Example Dockerfile (C# Service)
+
+```dockerfile
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /app
+COPY . .
+RUN dotnet publish -c Release -o out
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY --from=build /app/out .
+ENTRYPOINT ["dotnet", "JobService.dll"]
+```
+
+### Build & Run
+
+```bash
+docker build -t jobbie-job-service .
+docker run -p 8001:80 jobbie-job-service
+```
+
+---
+
+## 🤝 12. Contributing
+
+```bash
+git checkout -b feature/my-feature
+```
+
+Open a pull request once changes are committed.
+
+---
+
+
